@@ -6,5 +6,10 @@
     "express": "^4.21.2",
     "socket.io": "^4.8.1",
     "tailwindcss": "^3.4.17"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "build": "tailwindcss build -i src/css/base.css -o public/assets/css/builded.css --minify",
+    "watch": "tailwindcss build -i src/css/base.css -o public/assets/css/builded.css --watch"
   }
 }
