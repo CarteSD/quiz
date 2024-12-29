@@ -5,7 +5,6 @@ export class Quiz {
     #_currentPersonality;
     #_isRoundActive;
     #_nbRounds;
-    #_players;
 
     constructor(nbRounds, players) {
         this._currentRound = 0;
@@ -13,7 +12,6 @@ export class Quiz {
         this._currentPersonality = null;
         this._isRoundActive = false;
         this._nbRounds = nbRounds;
-        this._players = players;
     }
 
     get nbRounds() {
