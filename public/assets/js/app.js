@@ -4,6 +4,7 @@ const messageInput = document.getElementById('message-input');
 const messagesDiv = document.getElementById('messages');
 const sendBtn = document.getElementById('send-btn');
 const imgPersonality = document.getElementById('img-personality');
+const question = document.getElementById('question');
 
 let playerName = null;
 
@@ -36,6 +37,8 @@ socket.on('message', ({playerName, msg}) => {
 });
 
 socket.on('new round', ({roundNumber, personality}) => {
+    imgPersonality.classList.remove('hidden');
+    question.classList.remove('hidden');
     console.log(personality);
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
