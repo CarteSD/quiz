@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
     let pseudonyme = availablePlayers.shift();
     console.log('Un utilisateur s\'est connecté ! Pseudonyme : ' + pseudonyme);
     quiz.addPlayer(pseudonyme);
+    socket.username = pseudonyme;
     socket.emit('join', {
         pseudonyme : pseudonyme,
         score : quiz.scores.get(pseudonyme),
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
 
     // Lorsqu'un utilisateur se déconnecte
     socket.on('disconnect', () => {
-        console.log('Un utilisateur s\'est déconnecté !');
+        console.log('Un utilisateur s\'est déconnecté ! ' + socket.username);
         availablePlayers.push(pseudonyme);
     });
 
