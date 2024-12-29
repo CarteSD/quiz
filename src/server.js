@@ -18,7 +18,12 @@ const PLAYERS = new Map([
     ['Joueur 3', 0],
     ['Joueur 4', 0]
 ]);
-let quiz = new Quiz(NB_ROUNDS, PLAYERS); // Instanciation d'un objet Quiz
+let quiz = new Quiz(NB_ROUNDS, new Map()); // Instanciation d'un objet Quiz
+
+if (PLAYERS.size > quiz.maxPlayers) {
+    console.error('Le nombre de joueurs est trop élevé');
+    process.exit(1);
+}
 
 let usedPersonalities = new Set(); // Personnalités déjà utilisées
 
@@ -35,20 +40,99 @@ function getRandomPersonality() {
     return personality;
 }
 
-let personality = getRandomPersonality();
+function startNewRound() {
+    quiz.startNewRound(getRandomPersonality());
+    io.emit('new round', {
+        roundNumber : quiz.currentRound,
+        personality : quiz.currentPersonality
+    });
+}
+
+let availablePlayers = Array.from(PLAYERS.keys());
 
 io.on('connection', (socket) => {
-    console.log('Un utilisateur s\'est connecté !');
-    io.emit('new round', personality);
+    // Attribution d'un pseudonyme disponible parmi ceux du tableau
+    let pseudonyme = availablePlayers.shift();
+    console.log('Un utilisateur s\'est connecté ! Pseudonyme : ' + pseudonyme);
+    quiz.addPlayer(pseudonyme);
+    socket.emit('join', {
+        pseudonyme : pseudonyme,
+        score : quiz.scores.get(pseudonyme),
+    });
 
+    // Lorsqu'un utilisateur se déconnecte
+    socket.on('disconnect', () => {
+        console.log('Un utilisateur s\'est déconnecté !');
+        availablePlayers.push(pseudonyme);
+    });
 
-    // Lorsqu'un client envoie un message
-    socket.on('chat message', (msg) => {
-        io.emit('message', msg); // On le renvoie à tous les clients
-        if (personality.answer.includes(msg.toLowerCase())) {
-            personality = getRandomPersonality();
-            io.emit('message', 'Un joueur a trouvé la réponse !');
-            io.emit('new round', personality);
+    // Vérification du nombre de joueurs
+    if (quiz.scores.size < quiz.minPlayers) {
+        console.log('Pas assez de joueurs pour commencé la partie');
+        socket.emit('message', {
+            playerName : 'System',
+            msg : 'En attente de joueurs...',
+        })
+    }
+    // S'il y a assez de joueurs
+    else {
+        // Envoi de la manche en cours (s'il y en a une)
+        if (quiz.isRoundActive) {
+            socket.emit('new round', quiz.currentPersonality);
+        }
+        // Sinon, début d'une nouvelle partie
+        else {
+            io.emit('message', {
+                playerName : 'System',
+                msg : 'Début d\'une nouvelle partie !'
+            });
+            startNewRound();
+        }
+    }
+
+    socket.on('guess', ({playerName, message}) => {
+        // Envoi du message à tous les utilisateurs
+        io.emit('message', {
+            playerName : playerName,
+            msg : message,
+        });
+        // Si c'est la bone réponse
+        if (quiz.currentPersonality.answer.includes(message.toLowerCase())) {
+            // Incrémentation du score du joueur
+            quiz.scores.set(playerName, quiz.scores.get(playerName) + 1);
+            // Envoi du message d'information de fin de manche à tous les utilisateurs
+            io.emit('message', {
+                playerName : 'System',
+                msg : `Bonne réponse de ${playerName}, la personnalité était ${quiz.currentPersonality.answer[0]} !`,
+            });
+            // Information au joueur de son nouveau score
+            socket.emit('message', {
+                playerName : 'System',
+                msg : `Votre score : ${quiz.scores.get(playerName)}pts`,
+            });
+            // Vérification du nombre de manches
+            if (quiz.currentRound >= quiz.nbRounds) {
+                io.emit('message', {
+                    playerName : 'System',
+                    msg : 'Fin de la partie !',
+                })
+                let scores = Array.from(quiz.scores.entries()).sort((a, b) => b[1] - a[1]);
+                io.emit('message', {
+                    playerName: 'System',
+                    msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score}pts`).join(',<br> - ')}`
+                });
+            }
+            else {
+                startNewRound();
+            }
+        }
+        // Sinon (mauvaise réponse)
+        else {
+            // Envoi du message à l'utilisateur
+            socket.emit('message', {
+                playerName : 'System',
+                msg : 'Mauvaise réponse',
+            });
         }
     });
 });

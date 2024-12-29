@@ -5,6 +5,8 @@ const messagesDiv = document.getElementById('messages');
 const sendBtn = document.getElementById('send-btn');
 const imgPersonality = document.getElementById('img-personality');
 
+let playerName = null;
+
 socket.on('connect', () => {
     console.log('connected to server');
     socket.emit('chat message', 'Un nouvel utilisateur s\'est connecté');
@@ -14,7 +16,7 @@ socket.on('connect', () => {
 function sendMessage() {
     const message = messageInput.value.trim();
     if (message) {
-        socket.emit('chat message', message);
+        socket.emit('guess', {playerName, message});
         messageInput.value = '';
     }
 }
@@ -28,12 +30,19 @@ messageInput.addEventListener('keypress', (e) => {
 });
 
 // Fonction traitant la réception du signal 'message' provenant du serveur
-socket.on('message', (msg) => {
+socket.on('message', ({playerName, msg}) => {
     console.log('message: ' + msg);
-    messagesDiv.innerHTML += `<p>${msg}</p>`;
+    messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${msg}</p>`;
 });
 
-socket.on('new round', (personality) => {
+socket.on('new round', ({roundNumber, personality}) => {
+    console.log(personality);
+    messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
     imgPersonality.src = `/assets/images/${personality.image}`;
 })
+
+socket.on('join', ({pseudonyme, score}) => {
+    messagesDiv.innerHTML += `<p>Bienvenue ${pseudonyme} ! Votre score : ${score}pts</p>`;
+    playerName = pseudonyme;
+});

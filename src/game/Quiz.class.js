@@ -7,7 +7,7 @@ export class Quiz {
         this._isRoundActive = false;
         this.nbRounds = nbRounds;
         this._minPlayers = 2;
-        this._maxPlayers = 5;
+        this._maxPlayers = 10;
     }
 
     get currentRound() {
@@ -56,6 +56,10 @@ export class Quiz {
 
     set maxPlayers(value) {
         this._maxPlayers = value;
+    }
+
+    addPlayer(player) {
+        this._scores.set(player, 0);
     }
 
     startNewRound(personality) {
