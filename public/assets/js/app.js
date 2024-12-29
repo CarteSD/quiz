@@ -39,6 +39,8 @@ socket.on('message', ({playerName, msg}) => {
 socket.on('new round', ({roundNumber, personality}) => {
     imgPersonality.classList.remove('hidden');
     question.classList.remove('hidden');
+    messageInput.disabled = false;
+    sendBtn.disabled = false;
     console.log(personality);
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
