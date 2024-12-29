@@ -3,6 +3,7 @@ const socket = io();
 const messageInput = document.getElementById('message-input');
 const messagesDiv = document.getElementById('messages');
 const sendBtn = document.getElementById('send-btn');
+const imgPersonality = document.getElementById('img-personality');
 
 socket.on('connect', () => {
     console.log('connected to server');
@@ -31,3 +32,8 @@ socket.on('message', (msg) => {
     console.log('message: ' + msg);
     messagesDiv.innerHTML += `<p>${msg}</p>`;
 });
+
+socket.on('new round', (personality) => {
+    messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
+    imgPersonality.src = `/assets/images/${personality.image}`;
+})
