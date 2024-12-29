@@ -2,12 +2,23 @@ import express from 'express';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { personnalites } from './game/personalities.js';
+import { Quiz } from "./game/Quiz.class.js";
+
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
 app.use(express.static('public'));
+
+const NB_ROUNDS = 5;
+const PLAYERS = new Map([
+    ['Joueur 1', 0],
+    ['Joueur 2', 0],
+    ['Joueur 3', 0],
+    ['Joueur 4', 0]
+]);
+let quiz = new Quiz(NB_ROUNDS, PLAYERS); // Instanciation d'un objet Quiz
 
 let usedPersonalities = new Set(); // Personnalités déjà utilisées
 
