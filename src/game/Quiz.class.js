@@ -1,33 +1,13 @@
 export class Quiz {
 
-    #_currentRound;
-    #_scores;
-    #_currentPersonality;
-    #_isRoundActive;
-    #_nbRounds;
-
     constructor(nbRounds, players) {
         this._currentRound = 0;
         this._scores = new Map(players);
         this._currentPersonality = null;
         this._isRoundActive = false;
-        this._nbRounds = nbRounds;
-    }
-
-    get nbRounds() {
-        return this._nbRounds;
-    }
-
-    set nbRounds(value) {
-        this._nbRounds = value;
-    }
-
-    get players() {
-        return this._players;
-    }
-
-    set players(value) {
-        this._players = value;
+        this.nbRounds = nbRounds;
+        this._minPlayers = 2;
+        this._maxPlayers = 5;
     }
 
     get currentRound() {
@@ -62,18 +42,34 @@ export class Quiz {
         this._isRoundActive = value;
     }
 
+    get minPlayers() {
+        return this._minPlayers;
+    }
+
+    set minPlayers(value) {
+        this._minPlayers = value;
+    }
+
+    get maxPlayers() {
+        return this._maxPlayers;
+    }
+
+    set maxPlayers(value) {
+        this._maxPlayers = value;
+    }
+
     startNewRound(personality) {
-        this.currentPersonality = personality;
-        this.isRoundActive = true;
-        this.currentRound++;
+        this._currentPersonality = personality;
+        this._isRoundActive = true;
+        this._currentRound++;
     }
 
     endRound() {
-        this.currentPersonality = null;
-        this.isRoundActive = false;
+        this._currentPersonality = null;
+        this._isRoundActive = false;
     }
 
     isGameOver() {
-        return this.currentRound > this.nbRounds;
+        return this._currentRound > this.nbRounds;
     }
 }
