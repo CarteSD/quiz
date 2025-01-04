@@ -86,6 +86,9 @@ io.on('connection', (socket) => {
         });
     }
 
+    // Envoi du leaderboard à jour
+    io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
+
     // Annonce dans le chat
     socket.broadcast.emit('message', {
         playerName: 'System',
