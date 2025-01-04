@@ -109,6 +109,16 @@ io.on('connection', (socket) => {
     }
 
     socket.on('guess', async ({playerName, message}) => {
+        const sendDelayedMessageToSocket = (message, delay) => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    socket.emit('message', message);
+                    resolve();
+                }, delay);
+            });
+        };
+
+
         // Envoi immédiat du message du joueur
         io.emit('message', {
             playerName: playerName,
@@ -124,12 +134,12 @@ io.on('connection', (socket) => {
             quiz.scores.set(playerName, quiz.scores.get(playerName) + 1);
 
             // Envoi de messages aux joueurs
-            await sendDelayedMessage({
+            io.emit('message', {
                 playerName: 'System',
                 msg: `Bonne réponse de ${playerName}, la personnalité était ${quiz.currentPersonality.answer[0]} !`
-            }, 1000);
+            });
 
-            await sendDelayedMessage({
+            await sendDelayedMessageToSocket({
                 playerName: 'System',
                 msg: `Votre score : ${quiz.scores.get(playerName)} point(s)`
             }, 1000);
