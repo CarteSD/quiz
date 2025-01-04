@@ -16,7 +16,6 @@ const leaderboard_players = document.getElementById('leaderboard-players');
 let playerName = null;
 
 socket.on('connect', () => {
-    console.log('connected to server');
     socket.emit('chat message', 'Un nouvel utilisateur s\'est connecté');
 });
 
@@ -39,7 +38,6 @@ messageInput.addEventListener('keypress', (e) => {
 
 // Fonction traitant la réception du signal 'message' provenant du serveur
 socket.on('message', ({playerName, msg}) => {
-    console.log('message: ' + msg);
     if (playerName === 'System') {
         messagesDiv.innerHTML += `<p class="text-center">${msg}</p>`;
     }
@@ -53,7 +51,6 @@ socket.on('new round', ({roundNumber, personality}) => {
     question.classList.remove('hidden');
     messageInput.disabled = false;
     sendBtn.disabled = false;
-    console.log(personality);
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
     imgPersonality.src = `/assets/images/${personality.image}`;
