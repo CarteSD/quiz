@@ -33,7 +33,12 @@ messageInput.addEventListener('keypress', (e) => {
 // Fonction traitant la réception du signal 'message' provenant du serveur
 socket.on('message', ({playerName, msg}) => {
     console.log('message: ' + msg);
-    messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${msg}</p>`;
+    if (playerName === 'System') {
+        messagesDiv.innerHTML += `<p class="text-center">${msg}</p>`;
+    }
+    else {
+        messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${msg}</p>`;
+    }
 });
 
 socket.on('new round', ({roundNumber, personality}) => {
@@ -48,6 +53,6 @@ socket.on('new round', ({roundNumber, personality}) => {
 })
 
 socket.on('join', ({pseudonyme, score}) => {
-    messagesDiv.innerHTML += `<p>Bienvenue ${pseudonyme} ! Votre score : ${score}pts</p>`;
+    messagesDiv.innerHTML += `<p class="text-center">Vous avez rejoint la partie...</p>`;
     playerName = pseudonyme;
 });

@@ -61,6 +61,11 @@ io.on('connection', (socket) => {
         score : quiz.scores.get(pseudonyme),
     });
 
+    socket.broadcast.emit('message', {
+        playerName : 'System',
+        msg : `${pseudonyme} a rejoint la partie !`,
+    })
+
     // Lorsqu'un utilisateur se déconnecte
     socket.on('disconnect', () => {
         console.log('Un utilisateur s\'est déconnecté ! ' + socket.username);
@@ -92,11 +97,15 @@ io.on('connection', (socket) => {
     }
 
     socket.on('guess', ({playerName, message}) => {
-        // Envoi du message à tous les utilisateurs
+        // Envoi du message à tous les joueurs
         io.emit('message', {
             playerName : playerName,
             msg : message,
         });
+        if (!quiz.isRoundActive) {
+            // Arrêt de l'action si jamais la manche n'est pas lancée
+            return;
+        }
         // Si c'est la bone réponse
         if (quiz.currentPersonality.answer.includes(message.toLowerCase())) {
             // Incrémentation du score du joueur
@@ -109,7 +118,7 @@ io.on('connection', (socket) => {
             // Information au joueur de son nouveau score
             socket.emit('message', {
                 playerName : 'System',
-                msg : `Votre score : ${quiz.scores.get(playerName)}pts`,
+                msg : `Votre score : ${quiz.scores.get(playerName)} point(s)`,
             });
             // Vérification du nombre de manches
             if (quiz.currentRound >= quiz.nbRounds) {
@@ -120,7 +129,7 @@ io.on('connection', (socket) => {
                 let scores = Array.from(quiz.scores.entries()).sort((a, b) => b[1] - a[1]);
                 io.emit('message', {
                     playerName: 'System',
-                    msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score}pts`).join(',<br> - ')}`
+                    msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score} point(s)`).join(',<br> - ')}`
                 });
             }
             else {
@@ -132,7 +141,7 @@ io.on('connection', (socket) => {
             // Envoi du message à l'utilisateur
             socket.emit('message', {
                 playerName : 'System',
-                msg : 'Mauvaise réponse',
+                msg : `<p class="text-red-400">${message} : Mauvaise réponse ! Tenez bon...</p>`,
             });
         }
     });
