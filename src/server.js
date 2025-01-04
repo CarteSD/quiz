@@ -1,7 +1,6 @@
 import express from 'express';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
-import { personnalites } from './game/personalities.js';
 import { Quiz } from "./game/Quiz.class.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
