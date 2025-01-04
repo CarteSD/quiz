@@ -1,6 +1,9 @@
+import { personnalites } from './personalities.js';
+
 export class Quiz {
 
-    constructor(nbRounds, players) {
+    constructor(id, nbRounds = 5, players = []) {
+        this._id = id;
         this._currentRound = 0;
         this._scores = new Map(players);
         this._currentPersonality = null;
@@ -8,6 +11,9 @@ export class Quiz {
         this.nbRounds = nbRounds;
         this._minPlayers = 2;
         this._maxPlayers = 10;
+        this._usedPersonalities = new Set();
+        this._allPersonalities = new Set();
+        personnalites.forEach(personality => this._allPersonalities.add(personality));
     }
 
     get currentRound() {
@@ -60,6 +66,10 @@ export class Quiz {
 
     addPlayer(player) {
         this._scores.set(player, 0);
+    }
+
+    removePlayer(player) {
+        this._scores.delete(player);
     }
 
     startNewRound(personality) {

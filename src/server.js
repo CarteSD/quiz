@@ -3,112 +3,155 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { personnalites } from './game/personalities.js';
 import { Quiz } from "./game/Quiz.class.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
+// Stockage des différentes instances de quiz
+const games = new Map();
+
+// Serveur de jeu
+const NB_ROUNDS = 5;
+const maxPlayers = 10;
+const minPlayers = 2;
+
+app.get('/', (req, res) => {
+    // Redirection vers une nouvelle partie avec un ID aléatoire
+    const newGameId = Math.floor(Math.random() * 1000000);
+    console.log('Nouvelle partie créée ! : ' + newGameId);
+    // Ajouter le jeu aux parties
+    games.set(newGameId, new Quiz(newGameId, NB_ROUNDS));
+    res.redirect(`/game/${newGameId}`);
+});
+
+app.get('/game/:gameId', (req, res) => {
+    const gameId = Number(req.params.gameId); // Conversion de la chaîne en nombre pour éviter tout conflit
+
+    // Rediriger vers une page 404 si la partie n'existe pas
+    if (!games.has(gameId)) {
+        res.redirect('/404');
+        return;
+    }
+
+    // Renvoyer la page du jeu
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
+
+app.get('/404', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', '404.html'));
+});
+
 app.use(express.static('public'));
 
-const NB_ROUNDS = 5;
-const PLAYERS = new Map([
-    ['Joueur 1', 0],
-    ['Joueur 2', 0],
-    ['Joueur 3', 0],
-    ['Joueur 4', 0]
-]);
-let quiz = new Quiz(NB_ROUNDS, new Map()); // Instanciation d'un objet Quiz
+// Fonction pour obtenir un pseudonyme unique parmi les joueurs
+let availablePlayers = Array.from({length: maxPlayers}, (_, index) => `Joueur ${index + 1}`);
 
-if (PLAYERS.size > quiz.maxPlayers) {
-    console.error('Le nombre de joueurs est trop élevé');
-    process.exit(1);
+function getAvailablePlayer() {
+    return availablePlayers.shift();
 }
 
-let usedPersonalities = new Set(); // Personnalités déjà utilisées
+// Connexion des utilisateurs
+io.on('connection', (socket) => {
+    const gameId = socket.handshake.query.gameId;
 
-function getRandomPersonality() {
-    const availablePersonalities = personnalites.filter(p => !usedPersonalities.has(p));
-    if (availablePersonalities.length === 0) {
-        usedPersonalities.clear();
-        const personality = personnalites[Math.floor(Math.random() * personnalites.length)];
-        usedPersonalities.add(personality);
+    if (!gameId) {
+        console.error('Game ID est undefined. Déconnexion du socket.');
+        socket.disconnect(true);
+        return;
+    }
+
+    console.log(`Nouveau joueur connecté pour la partie ${gameId}`);
+
+    let currentGame = games.get(gameId);
+
+    function getRandomPersonality() {
+        const availablePersonalities = Array.from(currentGame._allPersonalities).filter(p => !currentGame._usedPersonalities.has(p));
+        if (availablePersonalities.length === 0) {
+            currentGame._usedPersonalities.clear();
+            const personality = currentGame._allPersonalities[Math.floor(Math.random() * currentGame._allPersonalities.length)];
+            currentGame._usedPersonalities.add(personality);
+            return personality;
+        }
+        const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
+        currentGame._usedPersonalities.add(personality);
         return personality;
     }
-    const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
-    usedPersonalities.add(personality);
-    return personality;
-}
 
-function startNewRound() {
-    quiz.startNewRound(getRandomPersonality());
-    io.emit('new round', {
-        roundNumber : quiz.currentRound,
-        personality : quiz.currentPersonality
-    });
-}
+    // Si le jeu n'existe pas, en créer un
+    if (!currentGame) {
+        currentGame = new Quiz(gameId, NB_ROUNDS);
+        games.set(gameId, currentGame);
+    }
 
-const sendDelayedMessage = (message, delay) => {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            io.emit('message', message);
-            resolve();
-        }, delay);
-    });
-};
+    // Attribution d'un pseudonyme unique pour ce joueur
+    const pseudonyme = getAvailablePlayer();
+    console.log(`Nom du joueur : ${pseudonyme}`);
 
-let availablePlayers = Array.from(PLAYERS.keys());
+    // Ajout du joueur au jeu
+    currentGame.addPlayer(pseudonyme);
 
-io.on('connection', (socket) => {
-    // Attribution d'un pseudonyme disponible parmi ceux du tableau
-    let pseudonyme = availablePlayers.shift();
-    console.log('Un utilisateur s\'est connecté ! Pseudonyme : ' + pseudonyme);
-    quiz.addPlayer(pseudonyme);
+    // Rejoindre la room de cette partie
+    socket.join(gameId);
     socket.username = pseudonyme;
     socket.emit('join', {
-        pseudonyme : pseudonyme,
-        score : quiz.scores.get(pseudonyme),
+        pseudonyme: pseudonyme,
+        score: currentGame.scores.get(pseudonyme),
     });
 
-    socket.broadcast.emit('message', {
-        playerName : 'System',
-        msg : `${pseudonyme} a rejoint la partie !`,
-    })
-
-    // Lorsqu'un utilisateur se déconnecte
-    socket.on('disconnect', () => {
-        console.log('Un utilisateur s\'est déconnecté ! ' + socket.username);
-        availablePlayers.push(pseudonyme);
+    // Annonce dans le chat
+    io.to(gameId).emit('message', {
+        playerName: 'System',
+        msg: `${pseudonyme} a rejoint la partie !`,
     });
 
-    // Vérification du nombre de joueurs
-    if (quiz.scores.size < quiz.minPlayers) {
-        console.log('Pas assez de joueurs pour commencé la partie');
-        socket.emit('message', {
-            playerName : 'System',
-            msg : 'En attente de joueurs...',
+    // Vérification si la partie peut commencer
+    if (currentGame.scores.size >= minPlayers && !currentGame.isRoundActive) {
+        io.to(gameId).emit('message', {
+            playerName: 'System',
+            msg: 'La partie commence !'
+        });
+        currentGame.startNewRound(getRandomPersonality());
+        io.to(gameId).emit('new round', {
+            roundNumber: currentGame.currentRound,
+            personality: currentGame.currentPersonality
         })
     }
-    // S'il y a assez de joueurs
-    else {
-        // Envoi de la manche en cours (s'il y en a une)
-        if (quiz.isRoundActive) {
-            socket.emit('new round', {
-                roundNumber : quiz.currentRound,
-                personality : quiz.currentPersonality
-            });
-        }
-        // Sinon, début d'une nouvelle partie
-        else {
-            io.emit('message', {
-                playerName : 'System',
-                msg : 'Début d\'une nouvelle partie !'
-            });
-            startNewRound();
-        }
-    }
 
+    // Lorsque l'utilisateur se déconnecte
+    socket.on('disconnect', () => {
+        console.log(`${socket.username} a quitté la partie numéro ${gameId}`);
+        availablePlayers.push(socket.username);  // Re-liberer le pseudonyme
+        currentGame.removePlayer(socket.username); // Retirer le joueur du jeu
+
+        // Si après la déconnexion il n'y a plus assez de joueurs, on arrête la partie
+        if (currentGame.scores.size < minPlayers) {
+            io.to(gameId).emit('message', {
+                playerName: 'System',
+                msg: 'Pas assez de joueurs pour continuer la partie, elle va être fermée.'
+            });
+            games.delete(gameId);
+            process.exit(0);
+        }
+    });
+
+    // Lorsque les joueurs se connectent
     socket.on('guess', async ({playerName, message}) => {
+        const sendDelayedMessage = (message, delay) => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    io.to(gameId).emit('message', message);
+                    resolve();
+                }, delay);
+            });
+        };
+
         const sendDelayedMessageToSocket = (message, delay) => {
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -118,50 +161,49 @@ io.on('connection', (socket) => {
             });
         };
 
-
         // Envoi immédiat du message du joueur
-        io.emit('message', {
+        io.to(gameId).emit('message', {
             playerName: playerName,
             msg: message,
         });
 
-        if (!quiz.isRoundActive) {
+        if (!currentGame.isRoundActive) {
             return;
         }
 
-        if (quiz.currentPersonality.answer.includes(message.toLowerCase())) {
+        if (currentGame.currentPersonality.answer.includes(message.toLowerCase())) {
             // Incrémentation du score
-            quiz.scores.set(playerName, quiz.scores.get(playerName) + 1);
+            currentGame.scores.set(playerName, currentGame.scores.get(playerName) + 1);
 
             // Envoi de messages aux joueurs
-            io.emit('message', {
+            io.to(gameId).emit('message', {
                 playerName: 'System',
-                msg: `Bonne réponse de ${playerName}, la personnalité était ${quiz.currentPersonality.answer[0]} !`
+                msg: `Bonne réponse de ${playerName}, la personnalité était ${currentGame.currentPersonality.answer[0]} !`
             });
 
             await sendDelayedMessageToSocket({
                 playerName: 'System',
-                msg: `Votre score : ${quiz.scores.get(playerName)} point(s)`
+                msg: `Votre score : ${currentGame.scores.get(playerName)} point(s)`
             }, 1000);
 
-            if (quiz.currentRound >= quiz.nbRounds) {
+            if (currentGame.currentRound >= currentGame.nbRounds) {
                 await sendDelayedMessage({
                     playerName: 'System',
                     msg: 'Fin de la partie !'
                 }, 1000);
 
-                let scores = Array.from(quiz.scores.entries()).sort((a, b) => b[1] - a[1]);
+                let scores = Array.from(currentGame.scores.entries()).sort((a, b) => b[1] - a[1]);
                 await sendDelayedMessage({
                     playerName: 'System',
                     msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score} point(s)`).join(',<br> - ')}`
                 }, 2500);
             } else {
                 setTimeout(() => {
-                    startNewRound();
+                    currentGame.startNewRound(getRandomPersonality());
                 }, 3000);
             }
         } else {
-            // Message d'erreur immédiat
+            // Message d'erreur
             socket.emit('message', {
                 playerName: 'System',
                 msg: `<p class="text-red-400">${message} : Mauvaise réponse ! Tenez bon...</p>`
