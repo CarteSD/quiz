@@ -15,6 +15,10 @@ const leaderboard_players = document.getElementById('leaderboard-players');
 
 let playerName = null;
 
+function purifyHTML(unsafeHTML) {
+    return DOMPurify.sanitize(unsafeHTML);
+}
+
 socket.on('connect', () => {
     socket.emit('chat message', 'Un nouvel utilisateur s\'est connecté');
 });
@@ -39,10 +43,10 @@ messageInput.addEventListener('keypress', (e) => {
 // Fonction traitant la réception du signal 'message' provenant du serveur
 socket.on('message', ({playerName, msg}) => {
     if (playerName === 'System') {
-        messagesDiv.innerHTML += `<p class="text-center">${msg}</p>`;
+        messagesDiv.innerHTML += `<p class="text-center">${purifyHTML(msg)}</p>`;
     }
     else {
-        messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${msg}</p>`;
+        messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${purifyHTML(msg)}</p>`;
     }
 });
 
@@ -64,6 +68,6 @@ socket.on('join', ({pseudonyme, score}) => {
 socket.on('update leaderboard', (leaderboard) => {
     leaderboard_players.innerHTML = ''; // Réinitialise le contenu
     leaderboard.forEach(({ player, score }) => {
-        leaderboard_players.innerHTML += `<p>${player} : ${score} point(s)</p>`;
+        leaderboard_players.innerHTML += `<p>${purifyHTML(player)} : ${score} point(s)</p>`;
     });
 });
