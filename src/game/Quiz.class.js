@@ -14,6 +14,9 @@ export class Quiz {
         this._usedPersonalities = new Set();
         this._allPersonalities = new Set();
         personnalites.forEach(personality => this._allPersonalities.add(personality));
+        this._usedPseudonymes = [];
+        this._allPseudonymes = ['Jean', 'Paul', 'Marie', 'Pierre', 'Luc', 'Jacques', 'François', 'Michel', 'André', 'Philippe', 'Nicolas', 'Bernard', 'Sylvie', 'Isabelle', 'Sophie', 'Catherine', 'Martine', 'Julie', 'Valérie', 'Christine', 'Marie-Pierre', 'Marie-Claude', 'Marie-Hélène', 'Marie-Thérèse', 'Marie-Josée', 'Marie-France', 'Marie-Laure', 'Marie-Louise', 'Marie-Anne'];
+
     }
 
     get currentRound() {
@@ -85,5 +88,25 @@ export class Quiz {
 
     isGameOver() {
         return this._currentRound > this.nbRounds;
+    }
+
+    getRandomPersonality() {
+        const availablePersonalities = Array.from(this._allPersonalities).filter(p => !this._usedPersonalities.has(p));
+        if (availablePersonalities.length === 0) {
+            this._usedPersonalities.clear();
+            const personality = this._allPersonalities[Math.floor(Math.random() * this._allPersonalities.length)];
+            this._usedPersonalities.add(personality);
+            return personality;
+        }
+        const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
+        this._usedPersonalities.add(personality);
+        return personality;
+    }
+
+    getRandomPseudonyme() {
+        const availablePseudonymes = this._allPseudonymes.filter(p => !this._usedPseudonymes.includes(p));
+        let randomPseudonyme = availablePseudonymes[Math.floor(Math.random() * availablePseudonymes.length)];
+        this._usedPseudonymes.push(randomPseudonyme);
+        return randomPseudonyme;
     }
 }
