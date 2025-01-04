@@ -109,4 +109,10 @@ export class Quiz {
         this._usedPseudonymes.push(randomPseudonyme);
         return randomPseudonyme;
     }
+
+    getLeaderboard() {
+        return Array.from(this._scores.entries())
+            .sort(([, scoreA], [, scoreB]) => scoreB - scoreA) // Tri par ordre décroissant de scores
+            .map(([player, score]) => ({ player, score }));
+    }
 }

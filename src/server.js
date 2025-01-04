@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     });
 
     // Annonce dans le chat
-    io.to(gameId).emit('message', {
+    socket.broadcast.emit('message', {
         playerName: 'System',
         msg: `${pseudonyme} a rejoint la partie !`,
     });
@@ -102,6 +102,9 @@ io.on('connection', (socket) => {
         console.log(`${socket.username} a quitté la partie numéro ${gameId}`);
         currentGame._usedPersonalities.delete(socket.username);  // Re-liberer le pseudonyme
         currentGame.removePlayer(socket.username); // Retirer le joueur du jeu
+
+        // Mise à jour du leaderboard après la déconnexion
+        io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
 
         // Si après la déconnexion il n'y a plus assez de joueurs, on arrête la partie
         if (currentGame.scores.size < minPlayers) {
@@ -154,6 +157,9 @@ io.on('connection', (socket) => {
                 msg: `Bonne réponse de ${playerName}, la personnalité était ${currentGame.currentPersonality.answer[0]} !`
             });
 
+            // Envoyer la mise à jour du leaderboard à tous les clients
+            io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
+
             await sendDelayedMessageToSocket({
                 playerName: 'System',
                 msg: `Votre score : ${currentGame.scores.get(playerName)} point(s)`
@@ -172,7 +178,7 @@ io.on('connection', (socket) => {
                 }, 2500);
             } else {
                 setTimeout(() => {
-                    currentGame.startNewRound(getRandomPersonality());
+                    currentGame.startNewRound(currentGame.getRandomPersonality());
                 }, 3000);
             }
         } else {

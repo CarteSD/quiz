@@ -11,6 +11,7 @@ const messagesDiv = document.getElementById('messages');
 const sendBtn = document.getElementById('send-btn');
 const imgPersonality = document.getElementById('img-personality');
 const question = document.getElementById('question');
+const leaderboard_players = document.getElementById('leaderboard-players');
 
 let playerName = null;
 
@@ -61,4 +62,11 @@ socket.on('new round', ({roundNumber, personality}) => {
 socket.on('join', ({pseudonyme, score}) => {
     messagesDiv.innerHTML += `<p class="text-center">Vous avez rejoint la partie...</p>`;
     playerName = pseudonyme;
+});
+
+socket.on('update leaderboard', (leaderboard) => {
+    leaderboard_players.innerHTML = ''; // Réinitialise le contenu
+    leaderboard.forEach(({ player, score }) => {
+        leaderboard_players.innerHTML += `<p>${player} : ${score} point(s)</p>`;
+    });
 });
