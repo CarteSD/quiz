@@ -48,6 +48,15 @@ function startNewRound() {
     });
 }
 
+const sendDelayedMessage = (message, delay) => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            io.emit('message', message);
+            resolve();
+        }, delay);
+    });
+};
+
 let availablePlayers = Array.from(PLAYERS.keys());
 
 io.on('connection', (socket) => {
@@ -99,52 +108,53 @@ io.on('connection', (socket) => {
         }
     }
 
-    socket.on('guess', ({playerName, message}) => {
-        // Envoi du message à tous les joueurs
+    socket.on('guess', async ({playerName, message}) => {
+        // Envoi immédiat du message du joueur
         io.emit('message', {
-            playerName : playerName,
-            msg : message,
+            playerName: playerName,
+            msg: message,
         });
+
         if (!quiz.isRoundActive) {
-            // Arrêt de l'action si jamais la manche n'est pas lancée
             return;
         }
-        // Si c'est la bone réponse
+
         if (quiz.currentPersonality.answer.includes(message.toLowerCase())) {
-            // Incrémentation du score du joueur
+            // Incrémentation du score
             quiz.scores.set(playerName, quiz.scores.get(playerName) + 1);
-            // Envoi du message d'information de fin de manche à tous les utilisateurs
-            io.emit('message', {
-                playerName : 'System',
-                msg : `Bonne réponse de ${playerName}, la personnalité était ${quiz.currentPersonality.answer[0]} !`,
-            });
-            // Information au joueur de son nouveau score
-            socket.emit('message', {
-                playerName : 'System',
-                msg : `Votre score : ${quiz.scores.get(playerName)} point(s)`,
-            });
-            // Vérification du nombre de manches
+
+            // Envoi de messages aux joueurs
+            await sendDelayedMessage({
+                playerName: 'System',
+                msg: `Bonne réponse de ${playerName}, la personnalité était ${quiz.currentPersonality.answer[0]} !`
+            }, 1000);
+
+            await sendDelayedMessage({
+                playerName: 'System',
+                msg: `Votre score : ${quiz.scores.get(playerName)} point(s)`
+            }, 1000);
+
             if (quiz.currentRound >= quiz.nbRounds) {
-                io.emit('message', {
-                    playerName : 'System',
-                    msg : 'Fin de la partie !',
-                })
+                await sendDelayedMessage({
+                    playerName: 'System',
+                    msg: 'Fin de la partie !'
+                }, 1000);
+
                 let scores = Array.from(quiz.scores.entries()).sort((a, b) => b[1] - a[1]);
-                io.emit('message', {
+                await sendDelayedMessage({
                     playerName: 'System',
                     msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score} point(s)`).join(',<br> - ')}`
-                });
+                }, 2500);
+            } else {
+                setTimeout(() => {
+                    startNewRound();
+                }, 3000);
             }
-            else {
-                startNewRound();
-            }
-        }
-        // Sinon (mauvaise réponse)
-        else {
-            // Envoi du message à l'utilisateur
+        } else {
+            // Message d'erreur immédiat
             socket.emit('message', {
-                playerName : 'System',
-                msg : `<p class="text-red-400">${message} : Mauvaise réponse ! Tenez bon...</p>`,
+                playerName: 'System',
+                msg: `<p class="text-red-400">${message} : Mauvaise réponse ! Tenez bon...</p>`
             });
         }
     });
