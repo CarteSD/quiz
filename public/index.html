@@ -5,32 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quizz de culture générale</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/assets/css/builded.css">
 </head>
-<body class="bg-nigth font-sans">
+<body class="bg-night-base font-sans opacity-90 text-lavender-blush-base">
 <div class="max-w-3xl mx-auto mt-8 p-4">
-    <div id="chat-screen" class="bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold text-center mb-4 text-gray-800">Quizz de culture générale</h1>
+    <div id="chat-screen" class="bg-night-1 p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl text-center mb-4 font-serif">Quizz de culture générale</h1>
         <div class="flex justify-center items-center">
             <img id="img-personality" src="" alt="image à deviner" class="w-32 hidden">
         </div>
-        <h2 id="question" class="text-xl font-semibold text-center mb-4 text-gray-800 hidden">Qui est cette personne ?</h2>
+        <h2 id="question" class="text-xl font-semibold text-center mb-4 hidden">Qui est cette personne ?</h2>
         <div
                 id="messages"
-                class="h-96 overflow-y-auto mb-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
+                class="h-96 overflow-y-auto mb-4 p-4 rounded-lg bg-night-2">
         </div>
         <div class="flex gap-2">
             <input
                     type="text"
                     id="message-input"
                     placeholder="Écrivez une réponse"
-                    class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    class="flex-1 input"
                     disabled
             >
             <button
                     id="send-btn"
-                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+                    class="btn-primary"
                     disabled
             >
                 Envoyer
