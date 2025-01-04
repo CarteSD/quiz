@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
     // Lorsque l'utilisateur se déconnecte
     socket.on('disconnect', () => {
         console.log(`${socket.username} a quitté la partie numéro ${gameId}`);
-        availablePlayers.push(socket.username);  // Re-liberer le pseudonyme
+        currentGame._usedPersonalities.delete(socket.username);  // Re-liberer le pseudonyme
         currentGame.removePlayer(socket.username); // Retirer le joueur du jeu
 
         // Si après la déconnexion il n'y a plus assez de joueurs, on arrête la partie
