@@ -50,20 +50,13 @@ app.get('/404', (req, res) => {
 
 app.use(express.static('public'));
 
-// Fonction pour obtenir un pseudonyme unique parmi les joueurs
-let availablePlayers = Array.from({length: maxPlayers}, (_, index) => `Joueur ${index + 1}`);
-
-function getAvailablePlayer() {
-    return availablePlayers.shift();
-}
-
 // Connexion des utilisateurs
 io.on('connection', (socket) => {
-    const gameId = socket.handshake.query.gameId;
+    const gameId = Number(socket.handshake.query.gameId);
 
-    if (!gameId) {
-        console.error('Game ID est undefined. Déconnexion du socket.');
-        socket.disconnect(true);
+    // Vérifier si la partie existe
+    if (!games.has(gameId)) {
+        console.log(`La partie ${gameId} n'existe pas`);
         return;
     }
 
@@ -71,27 +64,8 @@ io.on('connection', (socket) => {
 
     let currentGame = games.get(gameId);
 
-    function getRandomPersonality() {
-        const availablePersonalities = Array.from(currentGame._allPersonalities).filter(p => !currentGame._usedPersonalities.has(p));
-        if (availablePersonalities.length === 0) {
-            currentGame._usedPersonalities.clear();
-            const personality = currentGame._allPersonalities[Math.floor(Math.random() * currentGame._allPersonalities.length)];
-            currentGame._usedPersonalities.add(personality);
-            return personality;
-        }
-        const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
-        currentGame._usedPersonalities.add(personality);
-        return personality;
-    }
-
-    // Si le jeu n'existe pas, en créer un
-    if (!currentGame) {
-        currentGame = new Quiz(gameId, NB_ROUNDS);
-        games.set(gameId, currentGame);
-    }
-
     // Attribution d'un pseudonyme unique pour ce joueur
-    const pseudonyme = getAvailablePlayer();
+    const pseudonyme = currentGame.getRandomPseudonyme();
     console.log(`Nom du joueur : ${pseudonyme}`);
 
     // Ajout du joueur au jeu
@@ -117,7 +91,7 @@ io.on('connection', (socket) => {
             playerName: 'System',
             msg: 'La partie commence !'
         });
-        currentGame.startNewRound(getRandomPersonality());
+        currentGame.startNewRound(currentGame.getRandomPersonality());
         io.to(gameId).emit('new round', {
             roundNumber: currentGame.currentRound,
             personality: currentGame.currentPersonality
