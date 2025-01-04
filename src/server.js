@@ -78,6 +78,14 @@ io.on('connection', (socket) => {
         score: currentGame.scores.get(pseudonyme),
     });
 
+    // Envoi de la manche déjà en cours (s'il y en a une)
+    if (currentGame.isRoundActive) {
+        socket.emit('new round', {
+            roundNumber: currentGame.currentRound,
+            personality: currentGame.currentPersonality
+        });
+    }
+
     // Annonce dans le chat
     socket.broadcast.emit('message', {
         playerName: 'System',
