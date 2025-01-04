@@ -84,7 +84,10 @@ io.on('connection', (socket) => {
     else {
         // Envoi de la manche en cours (s'il y en a une)
         if (quiz.isRoundActive) {
-            socket.emit('new round', quiz.currentPersonality);
+            socket.emit('new round', {
+                roundNumber : quiz.currentRound,
+                personality : quiz.currentPersonality
+            });
         }
         // Sinon, début d'une nouvelle partie
         else {
