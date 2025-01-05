@@ -237,12 +237,10 @@ io.on('connection', (socket) => {
                     },
                     body: JSON.stringify(data)
                 });
-                const result = await response.json();
-                console.log(result);
                 if (response.ok) {
-                    console.log('Résultat envoyé avec succès');
+                    console.log(`Résultat de la partie ${gameId} envoyé avec succès`);
                 } else {
-                    console.error('Erreur lors de l\'envoi du résultat');
+                    console.error(`Erreur lors de l'envoi du résultat de la partie ${gameId}`);
                 }
 
             } else {
