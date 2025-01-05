@@ -31,6 +31,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/game/:gameId', (req, res) => {
+    const reqIp = req.ip;
     const gameId = Number(req.params.gameId); // Conversion de la chaîne en nombre pour éviter tout conflit
 
     // Rediriger vers une page 404 si la partie n'existe pas
@@ -39,8 +40,21 @@ app.get('/game/:gameId', (req, res) => {
         return;
     }
 
-    // Renvoyer la page du jeu
-    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    // Recherche de l'adresse IP dans la partie
+    let playerFound = false;
+    const game = games.get(gameId);
+    game._scores.forEach((playerData, playerName) => {
+        if (playerData.ip_address === reqIp) {
+            playerFound = true;
+        }
+    })
+    if (playerFound) {
+        res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    }
+    else {
+        // Rediriger vers une page 404 si l'adresse IP n'est pas trouvée
+        res.redirect('/404');
+    }
 });
 
 app.get('/404', (req, res) => {
@@ -50,7 +64,7 @@ app.get('/404', (req, res) => {
 app.post('/game/init', express.json(), (req, res) => {
     const { gameId, nbRound, players } = req.body;
     try {
-        games.set(gameId, new Quiz(gameId, nbRound, players));
+        games.set(Number(gameId), new Quiz(Number(gameId), nbRound, players));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'
@@ -69,6 +83,7 @@ app.use(express.static('public'));
 
 // Connexion des utilisateurs
 io.on('connection', (socket) => {
+    const reqIp = socket.handshake.address;
     const gameId = Number(socket.handshake.query.gameId);
 
     // Vérifier si la partie existe
@@ -80,18 +95,21 @@ io.on('connection', (socket) => {
     console.log(`Nouveau joueur connecté pour la partie ${gameId}`);
 
     let currentGame = games.get(gameId);
+    let pseudonyme = '';
 
-    // Attribution d'un pseudonyme unique pour ce joueur
-    const pseudonyme = currentGame.getRandomPseudonyme();
+    // Récupération du pseudonyme du joueur
+    currentGame._scores.forEach((playerData, playerName) => {
+        if (playerData.ip_address === reqIp) {
+            pseudonyme = playerName;
+        }
+    })
     console.log(`Nom du joueur : ${pseudonyme}`);
-
-    // Ajout du joueur au jeu
-    currentGame.addPlayer(pseudonyme);
 
     // Rejoindre la room de cette partie
     socket.join(gameId);
     socket.username = pseudonyme;
     socket.emit('join', pseudonyme);
+    socket.emit('update leaderboard', currentGame.getLeaderboard());
 
     // Envoi de la manche déjà en cours (s'il y en a une)
     if (currentGame.isRoundActive) {
@@ -175,7 +193,9 @@ io.on('connection', (socket) => {
 
         if (currentGame.currentPersonality.answer.includes(message.toLowerCase())) {
             // Incrémentation du score
-            currentGame.scores.set(playerName, currentGame.scores.get(playerName) + 1);
+            let player = currentGame.scores.get(playerName);
+            player.score++;
+            currentGame.scores.set(playerName, player);
 
             // Envoi de messages aux joueurs
             io.to(gameId).emit('message', {
@@ -188,7 +208,7 @@ io.on('connection', (socket) => {
 
             await sendDelayedMessageToSocket({
                 playerName: 'System',
-                msg: `Votre score : ${currentGame.scores.get(playerName)} point(s)`
+                msg: `Votre score : ${currentGame.scores.get(playerName).score} point(s)`
             }, 1000);
 
             if (currentGame.currentRound >= currentGame.nbRounds) {
@@ -197,10 +217,9 @@ io.on('connection', (socket) => {
                     msg: 'Fin de la partie !'
                 }, 1000);
 
-                let scores = Array.from(currentGame.scores.entries()).sort((a, b) => b[1] - a[1]);
                 await sendDelayedMessage({
                     playerName: 'System',
-                    msg: `Classement final :<br> - ${scores.map(([player, score]) => `${player} : ${score} point(s)`).join(',<br> - ')}`
+                    msg: `Classement final :<br> - ${currentGame.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
                 }, 2500);
             } else {
                 setTimeout(() => {
