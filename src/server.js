@@ -160,7 +160,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Lorsque les joueurs se connectent
+    // Lorsque les joueurs envoient une proposition de réponse
     socket.on('guess', async ({playerName, message}) => {
         const sendDelayedMessage = (message, delay) => {
             return new Promise(resolve => {
