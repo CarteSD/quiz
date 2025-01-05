@@ -13,6 +13,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
+const config = require('../config.json');
+
 // Stockage des différentes instances de quiz
 const games = new Map();
 
@@ -216,7 +218,7 @@ io.on('connection', (socket) => {
                 }, 2500);
 
                 // Envoi du résultat final au serveur de Comus Party
-                const response = await fetch('http://localhost:8000/game/end', {
+                const response = await fetch(`${config.URL_COMUS}/game/end`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -252,6 +254,6 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(3001, () => {
-    console.log(`Server running on port 3001`);
+server.listen(config.PORT, () => {
+    console.log(`Server running on port ${config.PORT}`);
 });
