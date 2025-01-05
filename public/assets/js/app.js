@@ -52,6 +52,7 @@ socket.on('message', ({playerName, msg}) => {
     else {
         messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${purifyHTML(msg)}</p>`;
     }
+    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 });
 
 socket.on('new round', ({roundNumber, personality}) => {
@@ -62,11 +63,13 @@ socket.on('new round', ({roundNumber, personality}) => {
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
     imgPersonality.src = `/assets/images/${personality.image}`;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 })
 
 socket.on('join', (pseudonyme) => {
     messagesDiv.innerHTML += `<p class="text-center">Vous avez rejoint la partie...</p>`;
     playerName = pseudonyme;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 });
 
 socket.on('update leaderboard', (leaderboard) => {
