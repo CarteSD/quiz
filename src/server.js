@@ -73,10 +73,7 @@ io.on('connection', (socket) => {
     // Rejoindre la room de cette partie
     socket.join(gameId);
     socket.username = pseudonyme;
-    socket.emit('join', {
-        pseudonyme: pseudonyme,
-        score: currentGame.scores.get(pseudonyme),
-    });
+    socket.emit('join', pseudonyme);
 
     // Envoi de la manche déjà en cours (s'il y en a une)
     if (currentGame.isRoundActive) {

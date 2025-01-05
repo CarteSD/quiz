@@ -60,7 +60,7 @@ socket.on('new round', ({roundNumber, personality}) => {
     imgPersonality.src = `/assets/images/${personality.image}`;
 })
 
-socket.on('join', ({pseudonyme, score}) => {
+socket.on('join', (pseudonyme) => {
     messagesDiv.innerHTML += `<p class="text-center">Vous avez rejoint la partie...</p>`;
     playerName = pseudonyme;
 });
