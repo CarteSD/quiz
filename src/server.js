@@ -223,8 +223,8 @@ io.on('connection', (socket) => {
                     },
                     body: JSON.stringify({
                         gameCode: gameId,
-                        scores: Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
-                        winnerUuid: currentGame.getLeaderboard()[0].uuid
+                        SCORE: Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
+                        WINNER: currentGame.getLeaderboard()[0].uuid
                     })
                 });
                 if (response.ok) {
