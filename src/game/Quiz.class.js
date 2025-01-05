@@ -16,11 +16,7 @@ export class Quiz {
         this._usedPseudonymes = [];
         this._allPseudonymes = ['Jean', 'Paul', 'Marie', 'Pierre', 'Luc', 'Jacques', 'François', 'Michel', 'André', 'Philippe', 'Nicolas', 'Bernard', 'Sylvie', 'Isabelle', 'Sophie', 'Catherine', 'Martine', 'Julie', 'Valérie', 'Christine', 'Marie-Pierre', 'Marie-Claude', 'Marie-Hélène', 'Marie-Thérèse', 'Marie-Josée', 'Marie-France', 'Marie-Laure', 'Marie-Louise', 'Marie-Anne'];
         this._scores = new Map();
-        players.forEach(player => this._scores.set(player.username, {
-            uuid : player.uuid,
-            ip_address : player.ip_address,
-            score : 0,
-        }));
+        players.forEach(player => this.addPlayer(player));
     }
 
     get currentRound() {
