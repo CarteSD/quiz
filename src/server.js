@@ -157,7 +157,6 @@ io.on('connection', (socket) => {
                 msg: 'Pas assez de joueurs pour continuer la partie, elle va être fermée.'
             });
             games.delete(gameId);
-            process.exit(0);
         }
     });
 
@@ -192,6 +191,9 @@ io.on('connection', (socket) => {
         }
 
         if (currentGame.currentPersonality.answer.includes(message.toLowerCase())) {
+            // Arrêt du round en cours pour éviter les réponses multiples
+            currentGame.isRoundActive = false;
+
             // Incrémentation du score
             let player = currentGame.scores.get(playerName);
             player.score++;
@@ -221,6 +223,28 @@ io.on('connection', (socket) => {
                     playerName: 'System',
                     msg: `Classement final :<br> - ${currentGame.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
                 }, 2500);
+
+                // Envoi du résultat final au serveur de Comus Party
+                const data = {
+                    gameCode: gameId,
+                    scores: currentGame.scores,
+                    winnerUuid: currentGame.getLeaderboard()[0].uuid
+                };
+                const response = await fetch('http://localhost:8000/game/end', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                console.log(result);
+                if (response.ok) {
+                    console.log('Résultat envoyé avec succès');
+                } else {
+                    console.error('Erreur lors de l\'envoi du résultat');
+                }
+
             } else {
                 setTimeout(() => {
                     currentGame.startNewRound(currentGame.getRandomPersonality());
