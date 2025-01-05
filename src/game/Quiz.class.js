@@ -13,8 +13,6 @@ export class Quiz {
         this._usedPersonalities = new Set();
         this._allPersonalities = new Set();
         personnalites.forEach(personality => this._allPersonalities.add(personality));
-        this._usedPseudonymes = [];
-        this._allPseudonymes = ['Jean', 'Paul', 'Marie', 'Pierre', 'Luc', 'Jacques', 'François', 'Michel', 'André', 'Philippe', 'Nicolas', 'Bernard', 'Sylvie', 'Isabelle', 'Sophie', 'Catherine', 'Martine', 'Julie', 'Valérie', 'Christine', 'Marie-Pierre', 'Marie-Claude', 'Marie-Hélène', 'Marie-Thérèse', 'Marie-Josée', 'Marie-France', 'Marie-Laure', 'Marie-Louise', 'Marie-Anne'];
         this._scores = new Map();
         players.forEach(player => this.addPlayer(player));
     }
@@ -104,13 +102,6 @@ export class Quiz {
         const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
         this._usedPersonalities.add(personality);
         return personality;
-    }
-
-    getRandomPseudonyme() {
-        const availablePseudonymes = this._allPseudonymes.filter(p => !this._usedPseudonymes.includes(p));
-        let randomPseudonyme = availablePseudonymes[Math.floor(Math.random() * availablePseudonymes.length)];
-        this._usedPseudonymes.push(randomPseudonyme);
-        return randomPseudonyme;
     }
 
     getLeaderboard() {
