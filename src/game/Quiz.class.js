@@ -95,7 +95,7 @@ export class Quiz {
         const availablePersonalities = Array.from(this._allPersonalities).filter(p => !this._usedPersonalities.has(p));
         if (availablePersonalities.length === 0) {
             this._usedPersonalities.clear();
-            const personality = this._allPersonalities[Math.floor(Math.random() * this._allPersonalities.length)];
+            const personality = Array.from(this._allPersonalities)[Math.floor(Math.random() * this._allPersonalities.size)];
             this._usedPersonalities.add(personality);
             return personality;
         }
