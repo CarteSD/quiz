@@ -30,9 +30,9 @@ app.get('/', (req, res) => {
     res.redirect(`/game/${newGameId}`);
 });
 
-app.get('/game/:gameId', (req, res) => {
-    const reqIp = req.ip;
+app.get('/game/:gameId/:uuid', (req, res) => {
     const gameId = Number(req.params.gameId); // Conversion de la chaîne en nombre pour éviter tout conflit
+    const playerUuid = req.params.uuid;
 
     // Rediriger vers une page 404 si la partie n'existe pas
     if (!games.has(gameId)) {
@@ -44,7 +44,7 @@ app.get('/game/:gameId', (req, res) => {
     let playerFound = false;
     const game = games.get(gameId);
     game._scores.forEach((playerData, playerName) => {
-        if (playerData.ip_address === reqIp) {
+        if (playerData.uuid === playerUuid) {
             playerFound = true;
         }
     })
@@ -83,7 +83,7 @@ app.use(express.static('public'));
 
 // Connexion des utilisateurs
 io.on('connection', (socket) => {
-    const reqIp = socket.handshake.address;
+    const playerUuid = socket.handshake.query.uuid;
     const gameId = Number(socket.handshake.query.gameId);
 
     // Vérifier si la partie existe
@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
 
     // Récupération du pseudonyme du joueur
     currentGame._scores.forEach((playerData, playerName) => {
-        if (playerData.ip_address === reqIp) {
+        if (playerData.uuid === playerUuid) {
             pseudonyme = playerName;
         }
     })

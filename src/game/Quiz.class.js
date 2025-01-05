@@ -70,7 +70,6 @@ export class Quiz {
     addPlayer(player) {
         this._scores.set(player.username, {
             uuid: player.uuid,
-            ip_address: player.ip_address,
             score: 0,
         });
     }
@@ -120,8 +119,7 @@ export class Quiz {
             .map(([username, data]) => ({
                 username,
                 score: data.score,
-                uuid: data.uuid,
-                ip_address: data.ip_address
+                uuid: data.uuid
             }));
     }
 }

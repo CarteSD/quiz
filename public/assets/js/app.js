@@ -1,9 +1,13 @@
 // Récupérer le gameId depuis l'URL
 const gameId = window.location.pathname.split('/')[2];
+const playerUuid = window.location.pathname.split('/')[3];
 
 // Connexion au serveur Socket.IO en envoyant le gameId
 const socket = io({
-    query: { gameId: gameId }
+    query: {
+        gameId: gameId,
+        uuid: playerUuid
+    }
 });
 
 const messageInput = document.getElementById('message-input');
