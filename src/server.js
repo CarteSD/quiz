@@ -216,7 +216,6 @@ io.on('connection', (socket) => {
                 }, 2500);
 
                 // Envoi du résultat final au serveur de Comus Party
-                console.log(Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])));
                 const response = await fetch('http://localhost:8000/game/end', {
                     method: 'POST',
                     headers: {
