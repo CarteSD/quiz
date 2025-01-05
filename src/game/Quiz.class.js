@@ -5,7 +5,6 @@ export class Quiz {
     constructor(id, nbRounds = 5, players = []) {
         this._id = id;
         this._currentRound = 0;
-        this._scores = new Map(players);
         this._currentPersonality = null;
         this._isRoundActive = false;
         this.nbRounds = nbRounds;
@@ -16,7 +15,12 @@ export class Quiz {
         personnalites.forEach(personality => this._allPersonalities.add(personality));
         this._usedPseudonymes = [];
         this._allPseudonymes = ['Jean', 'Paul', 'Marie', 'Pierre', 'Luc', 'Jacques', 'François', 'Michel', 'André', 'Philippe', 'Nicolas', 'Bernard', 'Sylvie', 'Isabelle', 'Sophie', 'Catherine', 'Martine', 'Julie', 'Valérie', 'Christine', 'Marie-Pierre', 'Marie-Claude', 'Marie-Hélène', 'Marie-Thérèse', 'Marie-Josée', 'Marie-France', 'Marie-Laure', 'Marie-Louise', 'Marie-Anne'];
-
+        this._scores = new Map();
+        players.forEach(player => this._scores.set(player, {
+            uuid : player.uuid,
+            ip_adress : player.ip_adress,
+            score : 0,
+        }));
     }
 
     get currentRound() {
