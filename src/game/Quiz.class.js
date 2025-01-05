@@ -116,7 +116,12 @@ export class Quiz {
 
     getLeaderboard() {
         return Array.from(this._scores.entries())
-            .sort(([, scoreA], [, scoreB]) => scoreB - scoreA) // Tri par ordre décroissant de scores
-            .map(([player, score]) => ({ player, score }));
+            .sort(([, dataA], [, dataB]) => dataB.score - dataA.score) // Tri par ordre décroissant des scores
+            .map(([username, data]) => ({
+                username,
+                score: data.score,
+                uuid: data.uuid,
+                ip_address: data.ip_address
+            }));
     }
 }
