@@ -21,15 +21,6 @@ const NB_ROUNDS = 5;
 const maxPlayers = 10;
 const minPlayers = 2;
 
-app.get('/', (req, res) => {
-    // Redirection vers une nouvelle partie avec un ID aléatoire
-    const newGameId = Math.floor(Math.random() * 1000000);
-    console.log('Nouvelle partie créée ! : ' + newGameId);
-    // Ajouter le jeu aux parties
-    games.set(newGameId, new Quiz(newGameId, NB_ROUNDS));
-    res.redirect(`/game/${newGameId}`);
-});
-
 app.get('/game/:gameId/:uuid', (req, res) => {
     const gameId = Number(req.params.gameId); // Conversion de la chaîne en nombre pour éviter tout conflit
     const playerUuid = req.params.uuid;
