@@ -216,6 +216,7 @@ io.on('connection', (socket) => {
                 }, 2500);
 
                 // Envoi du résultat final au serveur de Comus Party
+                console.log(Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])));
                 const response = await fetch('http://localhost:8000/game/end', {
                     method: 'POST',
                     headers: {
@@ -223,7 +224,7 @@ io.on('connection', (socket) => {
                     },
                     body: JSON.stringify({
                         gameCode: gameId,
-                        scores: currentGame.scores,
+                        scores: Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
                         winnerUuid: currentGame.getLeaderboard()[0].uuid
                     })
                 });
