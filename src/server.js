@@ -216,22 +216,21 @@ io.on('connection', (socket) => {
                 }, 2500);
 
                 // Envoi du résultat final au serveur de Comus Party
-                const data = {
-                    gameCode: gameId,
-                    scores: currentGame.scores,
-                    winnerUuid: currentGame.getLeaderboard()[0].uuid
-                };
                 const response = await fetch('http://localhost:8000/game/end', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        gameCode: gameId,
+                        scores: currentGame.scores,
+                        winnerUuid: currentGame.getLeaderboard()[0].uuid
+                    })
                 });
                 if (response.ok) {
-                    console.log(`Résultat de la partie ${gameId} envoyé avec succès`);
+                    console.log(`Résultat de la partie ${gameId} envoyé au serveur de Comus Party avec succès`);
                 } else {
-                    console.error(`Erreur lors de l'envoi du résultat de la partie ${gameId}`);
+                    console.error(`Erreur lors de l'envoi du résultat de la partie ${gameId} au serveur de Comus Party.`);
                 }
 
             } else {
