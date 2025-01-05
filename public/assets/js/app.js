@@ -67,7 +67,7 @@ socket.on('join', (pseudonyme) => {
 
 socket.on('update leaderboard', (leaderboard) => {
     leaderboard_players.innerHTML = ''; // Réinitialise le contenu
-    leaderboard.forEach(({ player, data }) => {
-        leaderboard_players.innerHTML += `<p>${purifyHTML(player)} : ${data.score} point(s)</p>`;
+    leaderboard.forEach(player => {
+        leaderboard_players.innerHTML += `<p>${purifyHTML(player.username)} : ${player.score} point(s)</p>`;
     });
 });
