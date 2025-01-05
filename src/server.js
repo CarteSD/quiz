@@ -224,6 +224,10 @@ io.on('connection', (socket) => {
             } else {
                 setTimeout(() => {
                     currentGame.startNewRound(currentGame.getRandomPersonality());
+                    io.to(gameId).emit('new round', {
+                        roundNumber: currentGame.currentRound,
+                        personality: currentGame.currentPersonality
+                    });
                 }, 3000);
             }
         } else {
