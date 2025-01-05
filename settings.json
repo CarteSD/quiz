@@ -1,0 +1,38 @@
+{
+  "game": {
+    "name": "Quiz",
+    "version": "1.0.0",
+    "description": "Quiz de culture générale",
+    "type": "single"
+  },
+  "settings": {
+    "minPlayers": 2,
+    "maxPlayers": 10,
+    "chatEnabled": true
+  },
+  "modifiableSettings": {
+    "nbRounds": {
+      "name": "Nombre de manches",
+      "description": "Nombre de manches à effectuer pour la partie",
+      "type": "number",
+      "default": 1,
+      "min": 1,
+      "max": 10
+    },
+    "roundDuration": {
+      "name": "Durée d'une manche (en secondes)",
+      "description": "Passage à la manche suivante après cette durée si personne n'a trouvé la bonne réponse",
+      "type": "number",
+      "default": 10,
+      "min": 10,
+      "max": 120
+    }
+  },
+  "neededParametersFromComus": [
+    "MODIFIED_SETTING_DATA"
+  ],
+  "returnParametersToComus": [
+    "SCORE",
+    "WINNER"
+  ]
+}
