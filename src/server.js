@@ -47,6 +47,24 @@ app.get('/404', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', '404.html'));
 });
 
+app.post('/game/init', express.json(), (req, res) => {
+    const { gameId, nbRound, players } = req.body;
+    try {
+        games.set(gameId, new Quiz(gameId, nbRound, players));
+        res.status(200).json({
+            success: true,
+            message: 'Partie initialisée avec succès'
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Erreur lors de l\'initialisation de la partie'
+        });
+    }
+
+});
+
 app.use(express.static('public'));
 
 // Connexion des utilisateurs
