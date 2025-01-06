@@ -5,6 +5,7 @@ import { Quiz } from "./game/Quiz.class.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import config from '../config.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,8 +13,6 @@ const __dirname = dirname(__filename);
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
-
-const config = require('../config.json');
 
 // Stockage des différentes instances de quiz
 const games = new Map();
