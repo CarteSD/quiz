@@ -16,6 +16,7 @@ const sendBtn = document.getElementById('send-btn');
 const imgPersonality = document.getElementById('img-personality');
 const question = document.getElementById('question');
 const leaderboard_players = document.getElementById('leaderboard-players');
+const timer = document.getElementById('timer');
 
 let playerName = null;
 
@@ -55,11 +56,12 @@ socket.on('message', ({playerName, msg}) => {
     messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 });
 
-socket.on('new round', ({roundNumber, personality}) => {
+socket.on('new round', ({roundNumber, personality, timeLeft}) => {
     imgPersonality.classList.remove('hidden');
     question.classList.remove('hidden');
     messageInput.disabled = false;
     sendBtn.disabled = false;
+    timer.innerHTML = timeLeft;
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
     imgPersonality.src = `${personality.image}`;
@@ -78,3 +80,17 @@ socket.on('update leaderboard', (leaderboard) => {
         leaderboard_players.innerHTML += `<p>${purifyHTML(player.username)} : ${player.score} point(s)</p>`;
     });
 });
+
+socket.on('timer', timeLeft => {
+    if (timeLeft === 0) {
+        messageInput.disabled = true;
+        sendBtn.disabled = true;
+    }
+    if (timeLeft > 0 && timeLeft <= 5) {
+        timer.classList.add('text-red-500');
+    }
+    if (timeLeft > 5) {
+        timer.classList.remove('text-red-500');
+    }
+    timer.innerHTML = timeLeft;
+})

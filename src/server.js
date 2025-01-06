@@ -105,7 +105,8 @@ io.on('connection', (socket) => {
     if (currentGame.isRoundActive) {
         socket.emit('new round', {
             roundNumber: currentGame.currentRound,
-            personality: currentGame.currentPersonality
+            personality: currentGame.currentPersonality,
+            timeLeft: currentGame.timeLeft
         });
     }
 
@@ -127,7 +128,8 @@ io.on('connection', (socket) => {
         currentGame.startNewRound(currentGame.getRandomPersonality());
         io.to(gameId).emit('new round', {
             roundNumber: currentGame.currentRound,
-            personality: currentGame.currentPersonality
+            personality: currentGame.currentPersonality,
+            timeLeft: currentGame.timeLeft
         });
         currentGame.startTimer(io);
     }
@@ -211,7 +213,8 @@ io.on('connection', (socket) => {
                     currentGame.startNewRound(currentGame.getRandomPersonality());
                     io.to(gameId).emit('new round', {
                         roundNumber: currentGame.currentRound,
-                        personality: currentGame.currentPersonality
+                        personality: currentGame.currentPersonality,
+                        timeLeft: currentGame.timeLeft
                     });
                     currentGame.startTimer(io);
                 }, 3000);

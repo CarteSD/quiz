@@ -80,6 +80,14 @@ export class Quiz {
         this._maxPlayers = value;
     }
 
+    get timeLeft() {
+        return this._timeLeft;
+    }
+
+    set timeLeft(value) {
+        this._timeLeft = value;
+    }
+
     addPlayer(player) {
         this._scores.set(player.username, {
             uuid: player.uuid,
@@ -139,10 +147,10 @@ export class Quiz {
             clearTimeout(this._roundTimer);
             this._timeLeft = this._roundDuration;
         }
-        console.log(`Temps restant : ${this._timeLeft}`);
         const timer = setInterval(async () => {
             if (this._timeLeft > 0) {
                 this._timeLeft--;
+                io.to(this._id).emit('timer', this._timeLeft);
             } else {
                 clearInterval(timer);
                 if (this._isRoundActive) {
