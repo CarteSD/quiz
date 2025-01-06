@@ -22,9 +22,9 @@ const NB_ROUNDS = 5;
 const maxPlayers = 10;
 const minPlayers = 2;
 
-app.post('/game/:gameId', express.json(), (req, res) => {
-    const { token } = req.body;
+app.get('/game/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
+    const token = req.params.token;
 
     // Vérifier si le token est valide en parcourant les joueurs
     let playerFound = false;
@@ -101,6 +101,7 @@ io.on('connection', (socket) => {
 
     // Envoi de la manche déjà en cours (s'il y en a une)
     if (currentGame.isRoundActive) {
+        console.log('envoi de la manche en cours');
         socket.emit('new round', {
             roundNumber: currentGame.currentRound,
             personality: currentGame.currentPersonality
@@ -123,6 +124,7 @@ io.on('connection', (socket) => {
             msg: 'La partie commence !'
         });
         currentGame.startNewRound(currentGame.getRandomPersonality());
+        console.log("envoi du début de manche");
         io.to(gameId).emit('new round', {
             roundNumber: currentGame.currentRound,
             personality: currentGame.currentPersonality
