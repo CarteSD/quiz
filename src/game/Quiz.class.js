@@ -25,7 +25,7 @@ export class Quiz {
 
     addPersonality(personality) {
         // Conversion de l'image en base 64
-        personality.image = getBase64Image(`./public/assets/images/${personality.image}`);
+        personality.image = getBase64Image(`./src/img/${personality.image}`);
         this._allPersonalities.add(personality);
     }
 
