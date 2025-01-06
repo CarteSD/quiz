@@ -82,11 +82,8 @@ io.on('connection', (socket) => {
 
     // Vérifier si la partie existe
     if (!games.has(gameId)) {
-        console.log(`La partie ${gameId} n'existe pas`);
         return;
     }
-
-    console.log(`Nouveau joueur connecté pour la partie ${gameId}`);
 
     let currentGame = games.get(gameId);
     let pseudonyme = '';
@@ -97,7 +94,6 @@ io.on('connection', (socket) => {
             pseudonyme = playerName;
         }
     })
-    console.log(`Nom du joueur : ${pseudonyme}`);
 
     // Rejoindre la room de cette partie
     socket.join(gameId);
@@ -107,7 +103,6 @@ io.on('connection', (socket) => {
 
     // Envoi de la manche déjà en cours (s'il y en a une)
     if (currentGame.isRoundActive) {
-        console.log('envoi de la manche en cours');
         socket.emit('new round', {
             roundNumber: currentGame.currentRound,
             personality: currentGame.currentPersonality
@@ -139,7 +134,6 @@ io.on('connection', (socket) => {
 
     // Lorsque l'utilisateur se déconnecte
     socket.on('disconnect', () => {
-        console.log(`${socket.username} a quitté la partie numéro ${gameId}`);
         currentGame._usedPersonalities.delete(socket.username);  // Re-liberer le pseudonyme
         currentGame.removePlayer(socket.username); // Retirer le joueur du jeu
 
