@@ -23,6 +23,7 @@ export class Quiz {
         this._scores = new Map();
         players.forEach(player => this.addPlayer(player));
         this._roundDuration = duration;
+        this._timeLeft = duration;
     }
 
     addPersonality(personality) {
@@ -134,33 +135,64 @@ export class Quiz {
     }
 
     async startTimer(io) {
-        if (this._roundTimer) {
+        if (this.isRoundActive) {
             clearTimeout(this._roundTimer);
+            this._timeLeft = this._roundDuration;
         }
-        this._roundTimer = setTimeout(async () => {
-            if (this._isRoundActive) {
-                let personality = this._currentPersonality;
-                this.endRound();
+        console.log(`Temps restant : ${this._timeLeft}`);
+        const timer = setInterval(async () => {
+            if (this._timeLeft > 0) {
+                this._timeLeft--;
+            } else {
+                clearInterval(timer);
+                if (this._isRoundActive) {
+                    let personality = this._currentPersonality;
+                    this.endRound();
 
-                io.to(this._id).emit('message', {
-                    playerName: 'System',
-                    msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
-                });
+                    io.to(this._id).emit('message', {
+                        playerName: 'System',
+                        msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
+                    });
 
-                if (!this.isGameOver()) {
-                    setTimeout(() => {
-                        this.startNewRound(this.getRandomPersonality());
-                        io.to(this._id).emit('new round', {
-                            roundNumber: this._currentRound,
-                            personality: this._currentPersonality
-                        });
-                        this.startTimer(io);
-                    }, 3000);
-                } else {
-                    await this.endGame(io);
+                    if (!this.isGameOver()) {
+                        setTimeout(() => {
+                            this.startNewRound(this.getRandomPersonality());
+                            io.to(this._id).emit('new round', {
+                                roundNumber: this._currentRound,
+                                personality: this._currentPersonality
+                            });
+                            this.startTimer(io);
+                        }, 3000);
+                    } else {
+                        await this.endGame(io);
+                    }
                 }
             }
-        }, this._roundDuration * 1000);
+        }, 1000);
+        // this._roundTimer = setTimeout(async () => {
+        //     if (this._isRoundActive) {
+        //         let personality = this._currentPersonality;
+        //         this.endRound();
+        //
+        //         io.to(this._id).emit('message', {
+        //             playerName: 'System',
+        //             msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
+        //         });
+        //
+        //         if (!this.isGameOver()) {
+        //             setTimeout(() => {
+        //                 this.startNewRound(this.getRandomPersonality());
+        //                 io.to(this._id).emit('new round', {
+        //                     roundNumber: this._currentRound,
+        //                     personality: this._currentPersonality
+        //                 });
+        //                 this.startTimer(io);
+        //             }, 3000);
+        //         } else {
+        //             await this.endGame(io);
+        //         }
+        //     }
+        // }, this._roundDuration * 1000);
     }
 
     async endGame(io) {
