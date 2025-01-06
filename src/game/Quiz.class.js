@@ -174,6 +174,22 @@ export class Quiz {
             msg: `Classement final :<br> - ${this.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
         }, 2500);
 
+        let winner = null;
+
+        // Vérification qu'au moins un joueur ait marqué un point
+        if (this.getLeaderboard()[0].score === 0) {
+            await this.sendDelayedMessage(io, {
+                playerName: 'System',
+                msg: 'Personne n\'a marqué de points...'
+            }, 1000);
+        }
+
+        // Vérification si plusieurs joueurs ont le même nombre de points
+        else {
+            let bestScore = this.getLeaderboard()[0].score;
+            winner = this.getLeaderboard().filter(player => player.score === bestScore);
+        }
+
         try {
             const response = await fetch(`${config.URL_COMUS}/game/end`, {
                 method: 'POST',
@@ -183,7 +199,7 @@ export class Quiz {
                 body: JSON.stringify({
                     gameCode: this._id,
                     SCORE: Object.fromEntries([...this._scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
-                    WINNER: this.getLeaderboard()[0].uuid
+                    WINNER: winner
                 })
             });
 
@@ -199,7 +215,10 @@ export class Quiz {
     sendDelayedMessage(io, message, delay) {
         return new Promise(resolve => {
             setTimeout(() => {
-                io.to(this._id).emit('message', message);
+                io.to(this._id).emit('message', {
+                    playerName: message.playerName,
+                    msg: message.msg
+                });
                 resolve();
             }, delay);
         });
