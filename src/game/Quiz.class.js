@@ -68,6 +68,7 @@ export class Quiz {
     addPlayer(player) {
         this._scores.set(player.username, {
             uuid: player.uuid,
+            token: player.token,
             score: 0,
         });
     }

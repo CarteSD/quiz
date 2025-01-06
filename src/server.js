@@ -22,24 +22,19 @@ const NB_ROUNDS = 5;
 const maxPlayers = 10;
 const minPlayers = 2;
 
-app.get('/game/:gameId/:uuid', (req, res) => {
-    const gameId = Number(req.params.gameId); // Conversion de la chaîne en nombre pour éviter tout conflit
-    const playerUuid = req.params.uuid;
+app.post('/game/:gameId', express.json(), (req, res) => {
+    const { token } = req.body;
+    const gameId = Number(req.params.gameId);
 
-    // Rediriger vers une page 404 si la partie n'existe pas
-    if (!games.has(gameId)) {
-        res.redirect('/404');
-        return;
-    }
-
-    // Recherche de l'adresse IP dans la partie
+    // Vérifier si le token est valide en parcourant les joueurs
     let playerFound = false;
-    const game = games.get(gameId);
-    game._scores.forEach((playerData, playerName) => {
-        if (playerData.uuid === playerUuid) {
+    let playerUuid = '';
+    games.get(gameId)._scores.forEach((playerData, playerName) => {
+        if (playerData.token === token) {
             playerFound = true;
+            playerUuid = token;
         }
-    })
+    });
     if (playerFound) {
         res.sendFile(path.join(__dirname, '../public', 'index.html'));
     }
@@ -53,8 +48,9 @@ app.get('/404', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', '404.html'));
 });
 
-app.post('/game/init', express.json(), (req, res) => {
-    const { gameId, nbRound, players } = req.body;
+app.post('/game/:gameId/init', express.json(), (req, res) => {
+    const gameId = Number(req.params.gameId);
+    const { nbRound, players } = req.body;
     try {
         games.set(Number(gameId), new Quiz(Number(gameId), nbRound, players));
         res.status(200).json({
