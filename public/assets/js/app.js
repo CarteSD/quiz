@@ -62,7 +62,7 @@ socket.on('new round', ({roundNumber, personality}) => {
     sendBtn.disabled = false;
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
-    imgPersonality.src = `/assets/images/${personality.image}`;
+    imgPersonality.src = `${personality.image}`;
     messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 })
 

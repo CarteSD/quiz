@@ -1,4 +1,10 @@
 import { personnalites } from './personalities.js';
+import fs from 'fs';
+
+function getBase64Image(filePath) {
+    const fileData = fs.readFileSync(filePath);
+    return `data:image/png;base64,${fileData.toString('base64')}`;
+}
 
 export class Quiz {
 
@@ -12,9 +18,15 @@ export class Quiz {
         this._maxPlayers = 10;
         this._usedPersonalities = new Set();
         this._allPersonalities = new Set();
-        personnalites.forEach(personality => this._allPersonalities.add(personality));
+        personnalites.forEach(personality => this.addPersonality(personality));
         this._scores = new Map();
         players.forEach(player => this.addPlayer(player));
+    }
+
+    addPersonality(personality) {
+        // Conversion de l'image en base 64
+        personality.image = getBase64Image(`./public/assets/images/${personality.image}`);
+        this._allPersonalities.add(personality);
     }
 
     get currentRound() {
