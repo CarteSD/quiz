@@ -107,7 +107,7 @@ export class Quiz {
     }
 
     isGameOver() {
-        return this._currentRound > this.nbRounds;
+        return this._currentRound >= this.nbRounds;
     }
 
     getRandomPersonality() {
@@ -147,7 +147,7 @@ export class Quiz {
                     msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
                 });
 
-                if (this._currentRound < this.nbRounds) {
+                if (!this.isGameOver()) {
                     setTimeout(() => {
                         this.startNewRound(this.getRandomPersonality());
                         io.to(this._id).emit('new round', {

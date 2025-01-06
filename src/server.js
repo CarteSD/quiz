@@ -204,7 +204,7 @@ io.on('connection', (socket) => {
                 msg: `Votre score : ${currentGame.scores.get(playerName).score} point(s)`
             }, 1000);
 
-            if (currentGame.currentRound >= currentGame.nbRounds) {
+            if (currentGame.isGameOver()) {
                 currentGame.endGame(io);
             } else {
                 setTimeout(() => {
