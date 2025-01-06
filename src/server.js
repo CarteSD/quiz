@@ -26,6 +26,12 @@ app.get('/game/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const token = req.params.token;
 
+    // Vérifier si la partie existe
+    if (!games.has(gameId)) {
+        res.redirect('/404');
+        return;
+    }
+
     // Vérifier si le token est valide en parcourant les joueurs
     let playerFound = false;
     let playerUuid = '';
