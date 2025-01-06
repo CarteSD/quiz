@@ -183,7 +183,7 @@ io.on('connection', (socket) => {
         }
 
         if (currentGame.currentPersonality.answer.map(answer => answer.toLowerCase()).includes(message.toLowerCase())) {
-            // Arrêt du round en cours pour éviter les réponses multiples
+            // Arrêt du round en cours pour éviter les multiples réponses
             let personality = currentGame.currentPersonality;
             currentGame.endRound();
 

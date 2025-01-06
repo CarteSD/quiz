@@ -108,7 +108,6 @@ export class Quiz {
 
     endRound() {
         if (this._roundTimer) {
-            clearTimeout(this._roundTimer);
             this._roundTimer = null;
         }
         this._currentPersonality = null;
@@ -144,11 +143,10 @@ export class Quiz {
 
     async startTimer(io) {
         if (this.isRoundActive) {
-            clearTimeout(this._roundTimer);
             this._timeLeft = this._roundDuration;
         }
         const timer = setInterval(async () => {
-            if (this._timeLeft > 0) {
+            if (this._timeLeft > 0 && this.isRoundActive) {
                 this._timeLeft--;
                 io.to(this._id).emit('timer', this._timeLeft);
             } else {
@@ -167,7 +165,8 @@ export class Quiz {
                             this.startNewRound(this.getRandomPersonality());
                             io.to(this._id).emit('new round', {
                                 roundNumber: this._currentRound,
-                                personality: this._currentPersonality
+                                personality: this._currentPersonality,
+                                timeLeft: this._timeLeft
                             });
                             this.startTimer(io);
                         }, 3000);
