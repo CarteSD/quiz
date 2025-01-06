@@ -25,7 +25,7 @@
       "name": "Durée d'une manche (en secondes)",
       "description": "Passage à la manche suivante après cette durée si personne n'a trouvé la bonne réponse",
       "type": "number",
-      "default": 10,
+      "default": 30,
       "min": 10,
       "max": 120
     }
