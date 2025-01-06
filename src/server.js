@@ -186,8 +186,8 @@ io.on('connection', (socket) => {
             return;
         }
 
-        if (currentGame.currentPersonality.answer.includes(message.toLowerCase())) {
-            // Arrêt du round en cours pour éviter les réponses multiples
+        if (currentGame.currentPersonality.answer.map(answer => answer.toLowerCase()).includes(message.toLowerCase())) {
+        // Arrêt du round en cours pour éviter les réponses multiples
             currentGame.isRoundActive = false;
 
             // Incrémentation du score
