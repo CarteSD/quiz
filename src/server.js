@@ -77,7 +77,7 @@ app.use(express.static('public'));
 
 // Connexion des utilisateurs
 io.on('connection', (socket) => {
-    const playerUuid = socket.handshake.query.uuid;
+    const token = socket.handshake.query.token;
     const gameId = Number(socket.handshake.query.gameId);
 
     // Vérifier si la partie existe
@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
 
     // Récupération du pseudonyme du joueur
     currentGame._scores.forEach((playerData, playerName) => {
-        if (playerData.uuid === playerUuid) {
+        if (playerData.token === token) {
             pseudonyme = playerName;
         }
     })
@@ -130,11 +130,11 @@ io.on('connection', (socket) => {
             msg: 'La partie commence !'
         });
         currentGame.startNewRound(currentGame.getRandomPersonality());
-        console.log("envoi du début de manche");
         io.to(gameId).emit('new round', {
             roundNumber: currentGame.currentRound,
             personality: currentGame.currentPersonality
-        })
+        });
+        currentGame.startTimer(io);
     }
 
     // Lorsque l'utilisateur se déconnecte
@@ -187,8 +187,9 @@ io.on('connection', (socket) => {
         }
 
         if (currentGame.currentPersonality.answer.map(answer => answer.toLowerCase()).includes(message.toLowerCase())) {
-        // Arrêt du round en cours pour éviter les réponses multiples
-            currentGame.isRoundActive = false;
+            // Arrêt du round en cours pour éviter les réponses multiples
+            let personality = currentGame.currentPersonality;
+            currentGame.endRound();
 
             // Incrémentation du score
             let player = currentGame.scores.get(playerName);
@@ -198,7 +199,7 @@ io.on('connection', (socket) => {
             // Envoi de messages aux joueurs
             io.to(gameId).emit('message', {
                 playerName: 'System',
-                msg: `Bonne réponse de ${playerName}, la personnalité était ${currentGame.currentPersonality.answer[0]} !`
+                msg: `Bonne réponse de ${playerName}, la personnalité était ${personality.answer[0]} !`
             });
 
             // Envoyer la mise à jour du leaderboard à tous les clients
@@ -210,34 +211,7 @@ io.on('connection', (socket) => {
             }, 1000);
 
             if (currentGame.currentRound >= currentGame.nbRounds) {
-                await sendDelayedMessage({
-                    playerName: 'System',
-                    msg: 'Fin de la partie !'
-                }, 1000);
-
-                await sendDelayedMessage({
-                    playerName: 'System',
-                    msg: `Classement final :<br> - ${currentGame.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
-                }, 2500);
-
-                // Envoi du résultat final au serveur de Comus Party
-                const response = await fetch(`${config.URL_COMUS}/game/end`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        gameCode: gameId,
-                        SCORE: Object.fromEntries([...currentGame.scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
-                        WINNER: currentGame.getLeaderboard()[0].uuid
-                    })
-                });
-                if (response.ok) {
-                    console.log(`Résultat de la partie ${gameId} envoyé au serveur de Comus Party avec succès`);
-                } else {
-                    console.error(`Erreur lors de l'envoi du résultat de la partie ${gameId} au serveur de Comus Party.`);
-                }
-
+                currentGame.endGame(io);
             } else {
                 setTimeout(() => {
                     currentGame.startNewRound(currentGame.getRandomPersonality());
@@ -245,6 +219,7 @@ io.on('connection', (socket) => {
                         roundNumber: currentGame.currentRound,
                         personality: currentGame.currentPersonality
                     });
+                    currentGame.startTimer(io);
                 }, 3000);
             }
         } else {

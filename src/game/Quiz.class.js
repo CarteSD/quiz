@@ -1,5 +1,6 @@
 import { personnalites } from './personalities.js';
 import fs from 'fs';
+import config from '../../config.json' with { type: 'json' };
 
 function getBase64Image(filePath) {
     const fileData = fs.readFileSync(filePath);
@@ -8,7 +9,7 @@ function getBase64Image(filePath) {
 
 export class Quiz {
 
-    constructor(id, nbRounds = 5, players = []) {
+    constructor(id, nbRounds = 5, duration = 30, players = []) {
         this._id = id;
         this._currentRound = 0;
         this._currentPersonality = null;
@@ -21,6 +22,7 @@ export class Quiz {
         personnalites.forEach(personality => this.addPersonality(personality));
         this._scores = new Map();
         players.forEach(player => this.addPlayer(player));
+        this._roundDuration = duration;
     }
 
     addPersonality(personality) {
@@ -96,6 +98,10 @@ export class Quiz {
     }
 
     endRound() {
+        if (this._roundTimer) {
+            clearTimeout(this._roundTimer);
+            this._roundTimer = null;
+        }
         this._currentPersonality = null;
         this._isRoundActive = false;
     }
@@ -125,5 +131,77 @@ export class Quiz {
                 score: data.score,
                 uuid: data.uuid
             }));
+    }
+
+    async startTimer(io) {
+        if (this._roundTimer) {
+            clearTimeout(this._roundTimer);
+        }
+        this._roundTimer = setTimeout(async () => {
+            if (this._isRoundActive) {
+                let personality = this._currentPersonality;
+                this.endRound();
+
+                io.to(this._id).emit('message', {
+                    playerName: 'System',
+                    msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
+                });
+
+                if (this._currentRound < this.nbRounds) {
+                    setTimeout(() => {
+                        this.startNewRound(this.getRandomPersonality());
+                        io.to(this._id).emit('new round', {
+                            roundNumber: this._currentRound,
+                            personality: this._currentPersonality
+                        });
+                        this.startTimer(io);
+                    }, 3000);
+                } else {
+                    await this.endGame(io);
+                }
+            }
+        }, this._roundDuration * 1000);
+    }
+
+    async endGame(io) {
+        await this.sendDelayedMessage(io, {
+            playerName: 'System',
+            msg: 'Fin de la partie !'
+        }, 1000);
+
+        await this.sendDelayedMessage(io, {
+            playerName: 'System',
+            msg: `Classement final :<br> - ${this.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
+        }, 2500);
+
+        try {
+            const response = await fetch(`${config.URL_COMUS}/game/end`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    gameCode: this._id,
+                    SCORE: Object.fromEntries([...this._scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
+                    WINNER: this.getLeaderboard()[0].uuid
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de l\'envoi des résultats');
+            }
+            console.log(`Résultat de la partie ${this._id} envoyé au serveur de Comus Party avec succès`);
+        } catch (error) {
+            console.error(`Erreur lors de l'envoi du résultat de la partie ${this._id} au serveur de Comus Party:`, error);
+        }
+    }
+
+    sendDelayedMessage(io, message, delay) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                io.to(this._id).emit('message', message);
+                resolve();
+            }, delay);
+        });
     }
 }
