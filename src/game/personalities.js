@@ -35,11 +35,6 @@ export const personnalites = [
         hint: "Entrepreneuse et animatrice de télévision"
     },
     {
-        image: "oprah_winfrey.jpg",
-        answer: ["Oprah Winfrey"],
-        hint: "Animatrice et femme d'affaires"
-    },
-    {
         image: "richard_branson.jpg",
         answer: ["Richard Branson"],
         hint: "Fondateur de Virgin Group"
