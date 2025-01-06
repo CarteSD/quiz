@@ -5,7 +5,7 @@ import { Quiz } from "./game/Quiz.class.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import config from '../config.json' assert { type: 'json' };
+import config from '../config.json' with { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
