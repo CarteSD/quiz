@@ -104,6 +104,7 @@ export class Quiz {
         this._currentPersonality = personality;
         this._isRoundActive = true;
         this._currentRound++;
+        this._timeLeft = this._roundDuration;
     }
 
     endRound() {

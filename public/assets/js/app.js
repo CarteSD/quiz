@@ -62,6 +62,7 @@ socket.on('new round', ({roundNumber, personality, timeLeft}) => {
     messageInput.disabled = false;
     sendBtn.disabled = false;
     timer.innerHTML = timeLeft;
+    timer.classList.remove('text-red-500');
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
     messagesDiv.innerHTML += `<p>Indice : ${personality.hint}</p>`;
     imgPersonality.src = `${personality.image}`;
