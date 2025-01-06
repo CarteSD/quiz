@@ -198,7 +198,7 @@ export class Quiz {
                 },
                 body: JSON.stringify({
                     gameCode: this._id,
-                    SCORE: Object.fromEntries([...this._scores].map(([username, playerData]) => [playerData.uuid, playerData.score])),
+                    SCORE: Object.fromEntries([...this._scores].map(([_, playerData]) => [playerData.uuid, playerData.score])),
                     WINNER: winner
                 })
             });
