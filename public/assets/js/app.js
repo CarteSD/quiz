@@ -20,10 +20,6 @@ const timer = document.getElementById('timer');
 
 let playerName = null;
 
-function purifyHTML(unsafeHTML) {
-    return DOMPurify.sanitize(unsafeHTML);
-}
-
 socket.on('connect', () => {
     socket.emit('chat message', 'Un nouvel utilisateur s\'est connecté');
 });
@@ -48,10 +44,23 @@ messageInput.addEventListener('keypress', (e) => {
 // Fonction traitant la réception du signal 'message' provenant du serveur
 socket.on('message', ({playerName, msg}) => {
     if (playerName === 'System') {
-        messagesDiv.innerHTML += `<p class="text-center">${purifyHTML(msg)}</p>`;
+        let messageParagraph = document.createElement('p');
+        messageParagraph.classList.add("text-center");
+        if (msg.includes("Mauvaise réponse")) {
+            messageParagraph.classList.add("text-red-400");
+        }
+        messageParagraph.innerText = msg;
+        messagesDiv.appendChild(messageParagraph);
     }
     else {
-        messagesDiv.innerHTML += `<p><span class="font-bold">${playerName} : </span>${purifyHTML(msg)}</p>`;
+        let messageParagraph = document.createElement('p');
+        let span = document.createElement('span');
+        span.classList.add('font-bold');
+        span.innerText = playerName;
+        messageParagraph.appendChild(span);
+        let message = document.createTextNode(` : ${msg}`);
+        messageParagraph.appendChild(message);
+        messagesDiv.appendChild(messageParagraph);
     }
     messagesDiv.scrollTop = messagesDiv.scrollHeight; // Permet de mettre le scroll en bas
 });
@@ -78,7 +87,9 @@ socket.on('join', (pseudonyme) => {
 socket.on('update leaderboard', (leaderboard) => {
     leaderboard_players.innerHTML = ''; // Réinitialise le contenu
     leaderboard.forEach(player => {
-        leaderboard_players.innerHTML += `<p>${purifyHTML(player.username)} : ${player.score} point(s)</p>`;
+        let rowP = document.createElement('p');
+        rowP.innerText = `${player.username} : ${player.score} point(s)`;
+        leaderboard_players.appendChild(rowP);
     });
 });
 

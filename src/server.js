@@ -55,9 +55,9 @@ app.get('/403', (req, res) => {
 
 app.post('/game/:gameId/init', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
-    const { nbRound, duration, players } = req.body;
+    const { settings, players } = req.body;
     try {
-        games.set(Number(gameId), new Quiz(Number(gameId), nbRound, duration, players));
+        games.set(Number(gameId), new Quiz(Number(gameId), settings.nbRound, settings.duration, players));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'
@@ -223,7 +223,7 @@ io.on('connection', (socket) => {
             // Message d'erreur
             socket.emit('message', {
                 playerName: 'System',
-                msg: `<p class="text-red-400">${message} : Mauvaise réponse ! Tenez bon...</p>`
+                msg: `${message} : Mauvaise réponse ! Tenez bon...`
             });
         }
     });
