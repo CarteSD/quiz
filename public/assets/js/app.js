@@ -112,17 +112,33 @@ socket.on('update leaderboard', (leaderboard) => {
     });
 });
 
-socket.on('timer', timeLeft => {
+socket.on('timer', ({totalTime, timeLeft}) => {
+    const timerCircle = document.querySelector('.timer-circle');
+    const timerNumber = document.getElementById('timer');
+
+    // On inverse le calcul du progress pour que ça se vide
+    const progress = ((totalTime - timeLeft) / totalTime) * 360;
+    timerCircle.style.setProperty('--progress', `${progress}deg`);
+
     if (timeLeft === 0) {
         messageInput.disabled = true;
         messageInput.value = '';
         sendBtn.disabled = true;
     }
+
     if (timeLeft > 0 && timeLeft <= 5) {
-        timer.classList.add('text-red-500');
+        timerNumber.classList.add('text-red-500');
+        timerCircle.classList.add('text-red-500');
+        // Le cercle en rouge qui se vide
+        timerCircle.style.background = `conic-gradient(rgba(239, 68, 68, 0.2) var(--progress), transparent 0deg)`;
     }
+
     if (timeLeft > 5) {
-        timer.classList.remove('text-red-500');
+        timerNumber.classList.remove('text-red-500');
+        timerCircle.classList.remove('text-red-500');
+        // Le cercle normal qui se vide
+        timerCircle.style.background = `conic-gradient(rgba(200, 200, 200, 0.2) var(--progress), transparent 0deg)`;
     }
-    timer.innerHTML = timeLeft;
-})
+
+    timerNumber.textContent = timeLeft;
+});

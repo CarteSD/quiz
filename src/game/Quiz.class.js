@@ -88,6 +88,14 @@ export class Quiz {
         this._timeLeft = value;
     }
 
+    get roundDuration() {
+        return this._roundDuration;
+    }
+
+    set roundDuration(value) {
+        this._roundDuration = value
+    }
+
     addPlayer(player) {
         this._scores.set(player.username, {
             uuid: player.uuid,
@@ -151,7 +159,9 @@ export class Quiz {
         const timer = setInterval(async () => {
             if (this._timeLeft > 0 && this.isRoundActive) {
                 this._timeLeft--;
-                io.to(this._id).emit('timer', this._timeLeft);
+                io.to(this._id).emit('timer', {
+                    totalTime: this._roundDuration,
+                    timeLeft: this._timeLeft});
             } else {
                 clearInterval(timer);
                 if (this._isRoundActive) {
@@ -168,7 +178,10 @@ export class Quiz {
                             this.startNewRound(this.getRandomPersonality());
                             io.to(this._id).emit('new round', {
                                 roundNumber: this._currentRound,
-                                personality: this._currentPersonality,
+                                personality: this._currentPersonality
+                            });
+                            io.to(this._id).emit('timer', {
+                                totalTime: this._roundDuration,
                                 timeLeft: this._timeLeft
                             });
                             this.startTimer(io);

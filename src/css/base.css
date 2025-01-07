@@ -200,3 +200,36 @@
     background-color: #43403A; /* Couleur de la piste */
     border-radius: 5px;
 }
+
+.timer-wrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.timer-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    /* On inverse les couleurs dans le gradient */
+    background: conic-gradient(rgba(200, 200, 200, 0.2) var(--progress), transparent 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-number {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.timer-circle {
+    background: conic-gradient(transparent var(--progress),
+    theme('colors.lavender-blush.2') 0deg); /* Pour le thème clair */
+}
+
+.dark .timer-circle {
+    background: conic-gradient(transparent var(--progress),
+    theme('colors.night.2') 0deg); /* Pour le thème sombre */
+}
