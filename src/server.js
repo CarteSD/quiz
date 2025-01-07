@@ -57,7 +57,7 @@ app.post('/game/:gameId/init', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const { settings, players } = req.body;
     try {
-        games.set(Number(gameId), new Quiz(Number(gameId), settings.nbRound, settings.duration, players));
+        games.set(Number(gameId), new Quiz(Number(gameId), settings.nbRounds, settings.duration, players));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'

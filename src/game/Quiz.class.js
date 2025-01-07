@@ -213,7 +213,7 @@ export class Quiz {
 
         await this.sendDelayedMessage(io, {
             playerName: 'System',
-            msg: `Classement final :<br> - ${this.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('<br> - ')}`
+            msg: `Classement final : \n- ${this.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('\n- ')}`
         }, 2500);
 
         let winner = null;
