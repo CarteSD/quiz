@@ -17,11 +17,6 @@ const io = new Server(server);
 // Stockage des différentes instances de quiz
 const games = new Map();
 
-// Serveur de jeu
-const NB_ROUNDS = 5;
-const maxPlayers = 10;
-const minPlayers = 2;
-
 app.get('/game/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const token = req.params.token;
@@ -120,7 +115,7 @@ io.on('connection', (socket) => {
     });
 
     // Vérification si la partie peut commencer
-    if (currentGame.scores.size >= minPlayers && !currentGame.isRoundActive) {
+    if (currentGame.scores.size >= currentGame.minPlayers && !currentGame.isRoundActive) {
         io.to(gameId).emit('message', {
             playerName: 'System',
             msg: 'La partie commence !'
@@ -143,7 +138,7 @@ io.on('connection', (socket) => {
         io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
 
         // Si après la déconnexion il n'y a plus assez de joueurs, on arrête la partie
-        if (currentGame.scores.size < minPlayers) {
+        if (currentGame.scores.size < currentGame.minPlayers) {
             io.to(gameId).emit('message', {
                 playerName: 'System',
                 msg: 'Pas assez de joueurs pour continuer la partie, elle va être fermée.'
