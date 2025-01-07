@@ -249,8 +249,10 @@ export class Quiz {
                 throw new Error('Erreur lors de l\'envoi des résultats');
             }
             console.log(`Résultat de la partie ${this._id} envoyé au serveur de Comus Party avec succès`);
+            return true;
         } catch (error) {
             console.error(`Erreur lors de l'envoi du résultat de la partie ${this._id} au serveur de Comus Party:`, error);
+            return false;
         }
     }
 

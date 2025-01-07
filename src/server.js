@@ -120,7 +120,7 @@ io.on('connection', (socket) => {
     });
 
     // Vérification si la partie peut commencer
-    if (currentGame.scores.size >= currentGame.minPlayers && !currentGame.isRoundActive) {
+    if (currentGame.scores.size >= currentGame.minPlayers && !currentGame.isRoundActive && !currentGame.isGameOver()) {
         io.to(gameId).emit('message', {
             playerName: 'System',
             msg: 'La partie commence !'
@@ -207,7 +207,9 @@ io.on('connection', (socket) => {
             }, 1000);
 
             if (currentGame.isGameOver()) {
-                currentGame.endGame(io);
+                if (currentGame.endGame(io)) {
+                    games.delete(gameId);
+                }
             } else {
                 setTimeout(() => {
                     currentGame.startNewRound(currentGame.getRandomPersonality());
