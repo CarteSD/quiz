@@ -106,7 +106,7 @@ export const personnalites = [
     },
     {
         image: "marion_marechal.jpg",
-        answer: ["Marion Maréchal", "Marion Maréchal-Le Pen", "Marion Maréchal Le Pen"],
+        answer: ["Marion Maréchal", "Marion Maréchal-Le Pen", "Marion Maréchal Le Pen", "Marion Marechal Le Pen", "Marion Marechal-Le Pen"],
         hint: "Ancienne députée, petite-fille de Jean-Marie Le Pen"
     },
     {
@@ -121,7 +121,7 @@ export const personnalites = [
     },
     {
         image: "francois_hollande.jpg",
-        answer: ["François Hollande", "Hollande"],
+        answer: ["François Hollande", "Hollande", "Francois Hollande"],
         hint: "Ancien Président de la République française"
     },
     {
@@ -146,7 +146,7 @@ export const personnalites = [
     },
     {
         image: "edith_piaf.jpg",
-        answer: ["Édith Piaf"],
+        answer: ["Édith Piaf", "Edith Piaf"],
         hint: "Chanteuse française légendaire"
     },
     {
@@ -176,7 +176,7 @@ export const personnalites = [
     },
     {
         image: "bernard_henri_levy.jpg",
-        answer: ["Bernard-Henri Lévy"],
+        answer: ["Bernard-Henri Lévy", "Bernard Henri Levy", "Bernard-Henri Levy"],
         hint: "Philosophe, écrivain et réalisateur"
     },
     {
@@ -191,7 +191,7 @@ export const personnalites = [
     },
     {
         image: "jay_z.jpg",
-        answer: ["Jay-z", "jay z", "Sean Carter"],
+        answer: ["Jay-z", "jay z", "Sean Carter", "jayz"],
         hint: "Rappeur et homme d'affaires, fondateur de Roc Nation"
     },
     {
