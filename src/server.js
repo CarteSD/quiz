@@ -40,13 +40,17 @@ app.get('/game/:gameId/:token', express.json(), (req, res) => {
         res.sendFile(path.join(__dirname, '../public', 'index.html'));
     }
     else {
-        // Rediriger vers une page 404 si l'adresse IP n'est pas trouvée
-        res.redirect('/404');
+        // Rediriger vers une page 403 si le token n'est pas trouvé
+        res.redirect('/403');
     }
 });
 
 app.get('/404', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', '404.html'));
+});
+
+app.get('/403', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', '403.html'));
 });
 
 app.post('/game/:gameId/init', express.json(), (req, res) => {
