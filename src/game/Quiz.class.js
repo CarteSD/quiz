@@ -200,6 +200,8 @@ export class Quiz {
             msg: 'Fin de la partie !'
         }, 1000);
 
+        io.to(this._id).emit('end game');
+
         await this.sendDelayedMessage(io, {
             playerName: 'System',
             msg: `Classement final : \n- ${this.getLeaderboard().map(player => `${player.username} : ${player.score} point(s)`).join('\n- ')}`

@@ -149,12 +149,13 @@ io.on('connection', (socket) => {
         io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
 
         // Si après la déconnexion il n'y a plus assez de joueurs, on arrête la partie
-        if (currentGame.scores.size < currentGame.minPlayers) {
+        if (Array.from(currentGame.scores).filter(player => player.connected).length < currentGame.minPlayers) {
             io.to(gameId).emit('message', {
                 playerName: 'System',
                 msg: 'Pas assez de joueurs pour continuer la partie, elle va être fermée.'
             });
-            games.delete(gameId);
+            currentGame.endRound();
+            currentGame.endGame(io);
         }
     });
 

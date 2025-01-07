@@ -142,3 +142,8 @@ socket.on('timer', ({totalTime, timeLeft}) => {
 
     timerNumber.textContent = timeLeft;
 });
+
+socket.on('end game', () => {
+    imgPersonality.classList.add('hidden');
+    question.classList.add('hidden');
+});
