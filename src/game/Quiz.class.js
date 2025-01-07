@@ -93,6 +93,7 @@ export class Quiz {
             uuid: player.uuid,
             token: player.token,
             score: 0,
+            connected: false
         });
     }
 
@@ -134,6 +135,7 @@ export class Quiz {
 
     getLeaderboard() {
         return Array.from(this._scores.entries())
+            .filter(([, data]) => data.connected)
             .sort(([, dataA], [, dataB]) => dataB.score - dataA.score) // Tri par ordre décroissant des scores
             .map(([username, data]) => ({
                 username,

@@ -91,6 +91,7 @@ io.on('connection', (socket) => {
     currentGame._scores.forEach((playerData, playerName) => {
         if (playerData.token === token) {
             pseudonyme = playerName;
+            currentGame._scores.get(playerName).connected = true;
         }
     })
 
@@ -136,7 +137,7 @@ io.on('connection', (socket) => {
     // Lorsque l'utilisateur se déconnecte
     socket.on('disconnect', () => {
         currentGame._usedPersonalities.delete(socket.username);  // Re-liberer le pseudonyme
-        currentGame.removePlayer(socket.username); // Retirer le joueur du jeu
+        currentGame._scores.get(socket.username).connected = false; // Mettre le statut du joueur en deconnecté
 
         // Mise à jour du leaderboard après la déconnexion
         io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
