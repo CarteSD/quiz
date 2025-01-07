@@ -179,30 +179,6 @@ export class Quiz {
                 }
             }
         }, 1000);
-        // this._roundTimer = setTimeout(async () => {
-        //     if (this._isRoundActive) {
-        //         let personality = this._currentPersonality;
-        //         this.endRound();
-        //
-        //         io.to(this._id).emit('message', {
-        //             playerName: 'System',
-        //             msg: `Temps écoulé ! La réponse était : ${personality.answer[0]}`,
-        //         });
-        //
-        //         if (!this.isGameOver()) {
-        //             setTimeout(() => {
-        //                 this.startNewRound(this.getRandomPersonality());
-        //                 io.to(this._id).emit('new round', {
-        //                     roundNumber: this._currentRound,
-        //                     personality: this._currentPersonality
-        //                 });
-        //                 this.startTimer(io);
-        //             }, 3000);
-        //         } else {
-        //             await this.endGame(io);
-        //         }
-        //     }
-        // }, this._roundDuration * 1000);
     }
 
     async endGame(io) {
