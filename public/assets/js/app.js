@@ -49,6 +49,10 @@ socket.on('message', ({playerName, msg}) => {
         if (msg.includes("Mauvaise réponse")) {
             messageParagraph.classList.add("text-red-400");
         }
+        if (msg.includes("Bonne réponse")) {
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+        }
         messageParagraph.innerText = msg;
         messagesDiv.appendChild(messageParagraph);
     }
