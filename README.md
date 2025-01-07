@@ -41,3 +41,48 @@ Une fois que le joueur est connecté, il peut envoyer des réponses aux question
 
 ## Informations supplémentaires
 Ce jeu est une première version, très simple afin de pouvoir réaliser un produit minimum viable pour la présentation de notre projet lors des soutenances de fin de semestre. Il est donc possible que des bugs soient présents, et que des améliorations soient nécessaires.
+
+## Développer
+Pour déployer ou développer ce jeu, il est nécessaire d'avoir Node.js installé sur votre machine (disponible sur [le site officiel de Node.js](https://nodejs.org/)).
+
+1. Dupliquer le projet
+```bash
+git clone https://github.com/CarteSD/quiz
+cd quiz
+```
+
+2. Installer les dépendances
+```bash
+npm install
+```
+
+3. Compiler le CSS
+```bash
+npm run build # Pour déployer
+npm run watch # Pour développer
+```
+
+4. Lancer le serveur de jeu *(À chaque modification du code, il est nécessaire de relancer le serveur, d'exécuter l'étape 5. ci-dessous et de recharger la page du jeu)*
+```bash
+npm run start
+```
+
+5. Lancer une requête d'initialisation de partie *(Cf section 3 - Informations techniques)* en POST sur l'adresse `http://localhost:3001/game/123/init` avec par exemple le corps de la requête suivant :
+```json
+{
+    "settings": {
+        "nbRounds": 5,
+        "duration": 15
+    },
+    "players": [
+        { "username": "Jean", "uuid": "abc-123", "token": "token-abc-def" },
+        { "username": "Paul", "uuid": "def-456", "token": "token-ghi-jkl" }
+    ]
+}
+```
+
+Le serveur de jeu est maintenant accessible à l'adresse `http://localhost:3001` *(ou bien au port indiqué dans le fichier `config.json`)*.
+
+Pour le rejoindre, il suffit de se connecter à l'adresse :  
+- `http://localhost:3001/game/123/token-abc-def` pour le joueur Jean
+- `http://localhost:3001/game/123/token-ghi-jkl` pour le joueur Paul.
