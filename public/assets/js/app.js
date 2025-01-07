@@ -87,9 +87,23 @@ socket.on('join', (pseudonyme) => {
 
 socket.on('update leaderboard', (leaderboard) => {
     leaderboard_players.innerHTML = ''; // Réinitialise le contenu
-    leaderboard.forEach(player => {
+    leaderboard.forEach((player, index) => {
         let rowP = document.createElement('p');
-        rowP.innerText = `${player.username} : ${player.score} point(s)`;
+        let medal = '';
+
+        // Attribue les émojis de médailles selon la position
+        switch (index) {
+            case 0:
+                medal = '🥇・';
+                break;
+            case 1:
+                medal = '🥈・';
+                break;
+            case 2:
+                medal = '🥉・';
+                break;
+        }
+        rowP.innerText = `${medal}${player.username} : ${player.score} point(s)`;
         leaderboard_players.appendChild(rowP);
     });
 });
