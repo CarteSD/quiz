@@ -6,7 +6,7 @@ export const personnalites = [
     },
     {
         image: "jeff_bezos.jpg",
-        answer: ["Jeff Bezos"],
+        answer: ["Jeff Bezos", "Bezos"],
         hint: "Fondateur d'Amazon"
     },
     {
@@ -56,17 +56,17 @@ export const personnalites = [
     },
     {
         image: "angela_merkel.jpg",
-        answer: ["Angela Merkel"],
+        answer: ["Angela Merkel", "Merkel"],
         hint: "Chancelière allemande"
     },
     {
         image: "emmanuel_macron.jpg",
-        answer: ["Emmanuel Macron"],
+        answer: ["Emmanuel Macron", "Macron"],
         hint: "Président de la République française"
     },
     {
         image: "vladimir_putin.jpg",
-        answer: ["Vladimir Putin"],
+        answer: ["Vladimir Poutine", "Poutine"],
         hint: "Président de la Russie"
     },
     {
@@ -76,12 +76,12 @@ export const personnalites = [
     },
     {
         image: "elon_musk.jpg",
-        answer: ["Elon Musk"],
+        answer: ["Elon Musk", "Musk"],
         hint: "Fondateur de Tesla et SpaceX"
     },
     {
         image: "mark_zuckerberg.jpg",
-        answer: ["Mark Zuckerberg"],
+        answer: ["Mark Zuckerberg", "Zuckerberg"],
         hint: "Fondateur de Facebook"
     },
     {
@@ -91,7 +91,7 @@ export const personnalites = [
     },
     {
         image: "steve_jobs.jpg",
-        answer: ["Steve Jobs"],
+        answer: ["Steve Jobs", "Jobs"],
         hint: "Fondateur d'Apple"
     },
     {
@@ -101,32 +101,32 @@ export const personnalites = [
     },
     {
         image: "jean_michel_blanquer.jpg",
-        answer: ["Jean-Michel Blanquer"],
-        hint: "Ministre de l'Éducation nationale"
+        answer: ["Jean-Michel Blanquer", "Blanquer"],
+        hint: "Ancien ministre de l'Éducation nationale"
     },
     {
         image: "marion_marechal.jpg",
-        answer: ["Marion Maréchal"],
+        answer: ["Marion Maréchal", "Marion Maréchal-Le Pen", "Marion Maréchal Le Pen"],
         hint: "Ancienne députée, petite-fille de Jean-Marie Le Pen"
     },
     {
         image: "marine_le_pen.jpg",
-        answer: ["Marine Le Pen"],
+        answer: ["Marine Le Pen", "Le Pen"],
         hint: "Ancienne présidente du Rassemblement National"
     },
     {
         image: "nicolas_sarkozy.jpg",
-        answer: ["Nicolas Sarkozy"],
+        answer: ["Nicolas Sarkozy", "Sarkozy"],
         hint: "Ancien Président de la République française"
     },
     {
         image: "francois_hollande.jpg",
-        answer: ["François Hollande"],
+        answer: ["François Hollande", "Hollande"],
         hint: "Ancien Président de la République française"
     },
     {
         image: "jacques_chirac.jpg",
-        answer: ["Jacques Chirac"],
+        answer: ["Jacques Chirac", "Chirac"],
         hint: "Ancien Président de la République française"
     },
     {
@@ -141,7 +141,7 @@ export const personnalites = [
     },
     {
         image: "charles_de_gaulle.jpg",
-        answer: ["Charles de Gaulle"],
+        answer: ["Charles de Gaulle", "de Gaulle"],
         hint: "Général, fondateur de la Ve République"
     },
     {
@@ -156,22 +156,22 @@ export const personnalites = [
     },
     {
         image: "serge_gainbourg.jpg",
-        answer: ["Serge Gainsbourg"],
+        answer: ["Serge Gainsbourg", "Gainsbourg"],
         hint: "Chanteur, compositeur et réalisateur français"
     },
     {
         image: "jean_paul_sartre.jpg",
-        answer: ["Jean-Paul Sartre"],
+        answer: ["Jean-Paul Sartre", "Sartre", "Jean Paul Sartre"],
         hint: "Philosophe et écrivain"
     },
     {
         image: "brigitte_bardot.jpg",
-        answer: ["Brigitte Bardot"],
+        answer: ["Brigitte Bardot", "Bardot"],
         hint: "Actrice et militante pour les droits des animaux"
     },
     {
         image: "yves_saint_laurent.jpg",
-        answer: ["Yves Saint Laurent"],
+        answer: ["Yves Saint Laurent", "YSL"],
         hint: "Créateur de mode français"
     },
     {
@@ -191,12 +191,12 @@ export const personnalites = [
     },
     {
         image: "jay_z.jpg",
-        answer: ["Jay-z", "jay z", "sean carter"],
+        answer: ["Jay-z", "jay z", "Sean Carter"],
         hint: "Rappeur et homme d'affaires, fondateur de Roc Nation"
     },
     {
         image: "kendrick_lamar.jpg",
-        answer: ["Kendrick Lamar", "lamar", "kendrick"],
+        answer: ["Kendrick Lamar", "Lamar"],
         hint: "Rappeur et auteur-compositeur, connu pour 'HUMBLE.'"
     },
     {
