@@ -70,6 +70,7 @@ socket.on('new round', ({roundNumber, personality, timeLeft}) => {
     question.classList.remove('hidden');
     messageInput.disabled = false;
     sendBtn.disabled = false;
+    messageInput.focus();
     timer.innerHTML = timeLeft;
     timer.classList.remove('text-red-500');
     messagesDiv.innerHTML += `<p class="font-bold">Manche n°${roundNumber}</p>`;
@@ -96,6 +97,7 @@ socket.on('update leaderboard', (leaderboard) => {
 socket.on('timer', timeLeft => {
     if (timeLeft === 0) {
         messageInput.disabled = true;
+        messageInput.value = '';
         sendBtn.disabled = true;
     }
     if (timeLeft > 0 && timeLeft <= 5) {
