@@ -31,8 +31,6 @@ export class Quiz {
         this._currentPersonality = null;        // Personnalité de la manche actuelle
         this._isRoundActive = false;            // Indique si une manche est en cours
         this._nbRounds = nbRounds;               // Nombre de manches
-        this._minPlayers = 2;                   // Nombre minimum de joueurs
-        this._maxPlayers = 10;                  // Nombre maximum de joueurs
         this._usedPersonalities = new Set();    // Personnalités déjà utilisées au cours de la partie
         this._allPersonalities = new Set();     // Ensemble de toutes les personnalités disponibles
         this._scores = new Map();               // Scores et autres informations à propos des participants
@@ -76,22 +74,6 @@ export class Quiz {
 
     set isRoundActive(value) {
         this._isRoundActive = value;
-    }
-
-    get minPlayers() {
-        return this._minPlayers;
-    }
-
-    set minPlayers(value) {
-        this._minPlayers = value;
-    }
-
-    get maxPlayers() {
-        return this._maxPlayers;
-    }
-
-    set maxPlayers(value) {
-        this._maxPlayers = value;
     }
 
     get timeLeft() {

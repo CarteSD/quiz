@@ -17,6 +17,9 @@ const io = new Server(server);
 // Stockage des différentes instances de quiz
 const games = new Map();
 
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 10;
+
 app.get('/game/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const token = req.params.token;
@@ -56,6 +59,13 @@ app.get('/403', (req, res) => {
 app.post('/game/:gameId/init', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const { settings, players } = req.body;
+    if (players.length > MAX_PLAYERS) {
+        res.status(409).json({
+            success: false,
+            message: 'Trop de joueurs pour la partie'
+        });
+        return;
+    }
     try {
         games.set(Number(gameId), new Quiz(Number(gameId), settings.nbRounds, settings.duration, players));
         res.status(200).json({
@@ -123,7 +133,7 @@ io.on('connection', (socket) => {
     });
 
     // Vérification si la partie peut commencer
-    if (currentGame.scores.size >= currentGame.minPlayers && !currentGame.isRoundActive && !currentGame.isGameOver()) {
+    if (currentGame.scores.size >= MIN_PLAYERS && !currentGame.isRoundActive && !currentGame.isGameOver()) {
         io.to(gameId).emit('message', {
             playerName: 'System',
             msg: 'La partie commence !'
