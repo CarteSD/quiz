@@ -37,7 +37,7 @@ app.get('/game/:gameId/:token', express.json(), (req, res) => {
         }
     });
     if (playerFound) {
-        res.sendFile(path.join(__dirname, '../public', 'index.html'));
+        res.sendFile(path.join(__dirname, '../public', 'game.html'));
     }
     else {
         // Rediriger vers une page 403 si le token n'est pas trouvé
