@@ -17,9 +17,11 @@ const io = new Server(server);
 // Stockage des différentes instances de quiz
 const games = new Map();
 
+// Constantes uniques pour l'ensemble des parties
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
 
+// Route pour rejoindre une partie
 app.get('/game/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const token = req.params.token;
@@ -48,14 +50,7 @@ app.get('/game/:gameId/:token', express.json(), (req, res) => {
     }
 });
 
-app.get('/404', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public', '404.html'));
-});
-
-app.get('/403', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public', '403.html'));
-});
-
+// Route pour initialiser une partie
 app.post('/game/:gameId/init', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const { settings, players } = req.body;
@@ -82,10 +77,22 @@ app.post('/game/:gameId/init', express.json(), (req, res) => {
 
 });
 
+// Route d'erreur 404 (page introuvable)
+app.get('/404', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', '404.html'));
+});
+
+// Route d'erreur 403 (accès interdit)
+app.get('/403', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', '403.html'));
+});
+
+// Définition du répertoire racine du serveur
 app.use(express.static('public'));
 
 // Connexion des utilisateurs
 io.on('connection', (socket) => {
+    // Récupération du token et de l'ID de la partie depuis la requête de connexion Socket.IO
     const token = socket.handshake.query.token;
     const gameId = Number(socket.handshake.query.gameId);
 
