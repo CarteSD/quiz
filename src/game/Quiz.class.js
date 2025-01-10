@@ -301,7 +301,7 @@ export class Quiz {
             let bestScore = this.getLeaderboard()[0].score;
 
             // Récupère les joueurs ayant le meilleur score en les comparant à bestScore
-            winner = this.getLeaderboard().filter(player => player.score === bestScore);
+            winner = this.getLeaderboard().filter(player => player.score === bestScore).map(player => player.uuid);
         }
 
         // Envoie les résultats de la partie au serveur de Comus Party
