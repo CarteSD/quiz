@@ -1,8 +1,8 @@
 {
   "game": {
-    "name": "Quiz",
+    "name": "Quiz de culture générale",
     "version": "1.0.0",
-    "description": "Quiz de culture générale",
+    "description": "Testez vos connaissances avec notre quiz de culture générale !\nDécouvrez un jeu divertissant et stimulant qui mettra à l'épreuve vos connaissances sur des thèmes variés : histoire, sciences, géographie, culture pop, et bien plus encore. Défiez vos amis ou progressez en solo pour devenir un véritable expert !\nChaque question est soigneusement sélectionnée pour vous surprendre et vous apprendre quelque chose de nouveau. Alors, prêts à relever le défi ? \nRejoignez la partie maintenant et montrez ce que vous savez !",
     "type": "single"
   },
   "settings": {
