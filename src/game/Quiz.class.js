@@ -287,11 +287,11 @@ export class Quiz {
         // Initialisation de la variable winner
         let winner = null;
 
-        // Vérification qu'au moins un joueur ait marqué un point
-        if (this.getLeaderboard()[0].score === 0) {
+        // Vérification du cas exæquo total (aucun joueur n'a marqué de points ou tous les joueurs ont le même nombre de points)
+        if (this.getLeaderboard()[0].score === 0 || this.getLeaderboard()[0].score === this.getLeaderboard()[-1].score) {
             await this.sendDelayedMessage(io, {
                 playerName: 'System',
-                msg: 'Personne n\'a marqué de points...'
+                msg: 'Tout le monde a le même score, quelle surprise !'
             }, 1000);
         }
 
