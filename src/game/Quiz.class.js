@@ -321,6 +321,7 @@ export class Quiz {
             if (!response.ok) {
                 throw new Error('Erreur lors de l\'envoi des résultats');
             }
+            window.location.href(`${config.URL_COMUS}/`);
             console.log(`Résultat de la partie ${this._id} envoyé au serveur de Comus Party avec succès`);
             return true;
         } catch (error) {
