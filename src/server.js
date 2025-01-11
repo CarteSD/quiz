@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
             pseudonyme = playerName;
             currentGame._scores.get(playerName).connected = true;
         }
-    })
+    });
 
     // Rejoindre la room de cette partie
     socket.join(gameId);
