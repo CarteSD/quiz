@@ -287,21 +287,31 @@ export class Quiz {
         // Initialisation de la variable winner
         let winner = null;
 
-        // Vérification du cas exæquo total (aucun joueur n'a marqué de points ou tous les joueurs ont le même nombre de points)
-        if (this.getLeaderboard()[0].score === 0 || this.getLeaderboard()[0].score === this.getLeaderboard()[this.getLeaderboard().length - 1].score) {
+        // Vérifie s'il y a au moins un joueur dans la partie
+        if (this.getLeaderboard().length === 0) {
+            console.error('Aucun joueur n\'a été trouvé dans le classement de la partie ' + this._id);
+        } else if (this.getLeaderboard().length === 1) {
             await this.sendDelayedMessage(io, {
                 playerName: 'System',
-                msg: 'Tout le monde a le même score, quelle surprise !'
+                msg: 'Vous êtes seul dans la partie, que faites-vous ici ?'
             }, 1000);
-        }
+        } else {
+            // Vérification du cas exæquo total (aucun joueur n'a marqué de points ou tous les joueurs ont le même nombre de points)
+            if (this.getLeaderboard()[0].score === 0 || this.getLeaderboard()[0].score === this.getLeaderboard()[this.getLeaderboard().length - 1].score) {
+                await this.sendDelayedMessage(io, {
+                    playerName: 'System',
+                    msg: 'Tout le monde a le même score, quelle surprise !'
+                }, 1000);
+            }
 
-        // Vérification si plusieurs joueurs ont le même nombre de points
-        else {
-            // Récupère le meilleur socre (le classement étant trié par ordre de score décroissant, le meilleur score est le premier)
-            let bestScore = this.getLeaderboard()[0].score;
+            // Vérification si plusieurs joueurs ont le même nombre de points
+            else {
+                // Récupère le meilleur socre (le classement étant trié par ordre de score décroissant, le meilleur score est le premier)
+                let bestScore = this.getLeaderboard()[0].score;
 
-            // Récupère les joueurs ayant le meilleur score en les comparant à bestScore
-            winner = this.getLeaderboard().filter(player => player.score === bestScore).map(player => player.uuid);
+                // Récupère les joueurs ayant le meilleur score en les comparant à bestScore
+                winner = this.getLeaderboard().filter(player => player.score === bestScore).map(player => player.uuid);
+            }
         }
 
         // Envoie les résultats de la partie au serveur de Comus Party
