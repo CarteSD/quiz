@@ -97,9 +97,6 @@ export class Quiz {
      * @param personality Personnalité à ajouter
      */
     addPersonality(personality) {
-        // Conversion de l'image en base 64 afin que les joueurs ne puissent pas connaître le nom du fichier
-        personality.image = getBase64Image(`./src/img/${personality.image}`);
-
         // Ajout de la personnalité à l'ensemble des personnalités
         this._allPersonalities.add(personality);
     }
@@ -171,12 +168,18 @@ export class Quiz {
             const personality = Array.from(this._allPersonalities)[Math.floor(Math.random() * this._allPersonalities.size)];
             this._usedPersonalities.add(personality);
 
+            // Conversion de l'image en base64
+            personality.image = getBase64Image(`./src/img/${personality.image}`);
+
             return personality;
         }
 
         // Sinon, on choisit une personnalité aléatoire parmi les personnalités disponibles puis on l'ajoute à _usedPersonalities
         const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
         this._usedPersonalities.add(personality);
+
+        // Conversion de l'image en base64
+        personality.image = getBase64Image(`./src/img/${personality.image}`);
 
         return personality;
     }
@@ -331,7 +334,6 @@ export class Quiz {
             if (!response.ok) {
                 throw new Error('Erreur lors de l\'envoi des résultats');
             }
-            window.location.href(`${config.URL_COMUS}/`);
             console.log(`Résultat de la partie ${this._id} envoyé au serveur de Comus Party avec succès`);
             return true;
         } catch (error) {
