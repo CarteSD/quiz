@@ -22,7 +22,7 @@ const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 10;
 
 // Route pour rejoindre une partie
-app.get('/game/:gameId/:token', express.json(), (req, res) => {
+app.get('/:gameId/:token', express.json(), (req, res) => {
     const gameId = Number(req.params.gameId);
     const token = req.params.token;
 
@@ -51,9 +51,11 @@ app.get('/game/:gameId/:token', express.json(), (req, res) => {
 });
 
 // Route pour initialiser une partie
-app.post('/game/:gameId/init', express.json(), (req, res) => {
+app.post('/:gameId/init', express.json(), (req, res) => {
+    console.log("test");
     const gameId = Number(req.params.gameId);
     const { settings, players } = req.body;
+    console.log(players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
             success: false,
