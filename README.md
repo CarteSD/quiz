@@ -72,7 +72,7 @@ npm run start
 {
     "settings": {
         "nbRounds": 5,
-        "duration": 15
+        "roundDuration:": 15
     },
     "players": [
         { "username": "Jean", "uuid": "abc-123", "token": "token-abc-def" },

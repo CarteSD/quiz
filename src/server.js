@@ -61,15 +61,15 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         });
         return;
     }
-    if (players.length < MIN_PLAYERS) {
-        res.status(409).json({
-            success: false,
-            message: 'Pas assez de joueurs pour la partie'
-        });
-        return;
-    }
+    // if (players.length < MIN_PLAYERS) {
+    //     res.status(409).json({
+    //         success: false,
+    //         message: 'Pas assez de joueurs pour la partie'
+    //     });
+    //     return;
+    // }
     try {
-        games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.duration, players));
+        games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.roundDuration, players));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'
@@ -147,7 +147,8 @@ io.on('connection', (socket) => {
     });
 
     // Vérification si la partie peut commencer
-    if (currentGame.scores.size >= MIN_PLAYERS && !currentGame.isRoundActive && !currentGame.isGameOver()) {
+    // currentGame.scores.size >= MIN_PLAYERS &&
+    if (!currentGame.isRoundActive && !currentGame.isGameOver()) {
         io.to(gameId).emit('message', {
             playerName: 'System',
             msg: 'La partie commence !'
