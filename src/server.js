@@ -96,9 +96,6 @@ io.on('connection', (socket) => {
     const token = socket.handshake.query.token;
     const gameId = socket.handshake.query.gameId;
 
-    // Afficher dans la console les room du serveur io
-    console.log(io.sockets.adapter.rooms);
-
     // Vérifier si la partie existe
     if (!games.has(gameId)) {
         return;
