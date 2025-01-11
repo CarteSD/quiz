@@ -179,3 +179,7 @@ socket.on('end game', () => {
     imgPersonality.classList.add('hidden');
     question.classList.add('hidden');
 });
+
+socket.on('redirect', data => {
+    window.parent.postMessage('redirect', data.url);
+})

@@ -239,6 +239,11 @@ io.on('connection', (socket) => {
 
             if (currentGame.isGameOver()) {
                 if (currentGame.endGame(io)) {
+                    setTimeout(() => {
+                        io.to(gameId).emit('redirect', {
+                            url: `${config.URL_COMUS}`,
+                        });
+                    }, 7500);
                     games.delete(gameId);
                 }
             } else {
