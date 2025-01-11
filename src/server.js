@@ -23,7 +23,7 @@ const MAX_PLAYERS = 10;
 
 // Route pour rejoindre une partie
 app.get('/:gameId/:token', express.json(), (req, res) => {
-    const gameId = Number(req.params.gameId);
+    const gameId = req.params.gameId;
     const token = req.params.token;
 
     // Vérifier si la partie existe
@@ -52,10 +52,8 @@ app.get('/:gameId/:token', express.json(), (req, res) => {
 
 // Route pour initialiser une partie
 app.post('/:gameId/init', express.json(), (req, res) => {
-    console.log("test");
-    const gameId = Number(req.params.gameId);
+    const gameId = req.params.gameId;
     const { settings, players } = req.body;
-    console.log(players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
             success: false,
@@ -64,7 +62,7 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         return;
     }
     try {
-        games.set(Number(gameId), new Quiz(Number(gameId), settings.nbRounds, settings.duration, players));
+        games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.duration, players));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'
@@ -96,7 +94,10 @@ app.use(express.static('public'));
 io.on('connection', (socket) => {
     // Récupération du token et de l'ID de la partie depuis la requête de connexion Socket.IO
     const token = socket.handshake.query.token;
-    const gameId = Number(socket.handshake.query.gameId);
+    const gameId = socket.handshake.query.gameId;
+
+    // Afficher dans la console les room du serveur io
+    console.log(io.sockets.adapter.rooms);
 
     // Vérifier si la partie existe
     if (!games.has(gameId)) {
@@ -136,7 +137,7 @@ io.on('connection', (socket) => {
     io.to(gameId).emit('update leaderboard', currentGame.getLeaderboard());
 
     // Annonce dans le chat
-    socket.broadcast.emit('message', {
+    socket.to(gameId).emit('message', {
         playerName: 'System',
         msg: `${pseudonyme} a rejoint la partie !`,
     });
