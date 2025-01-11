@@ -288,7 +288,7 @@ export class Quiz {
         let winner = null;
 
         // Vérification du cas exæquo total (aucun joueur n'a marqué de points ou tous les joueurs ont le même nombre de points)
-        if (this.getLeaderboard()[0].score === 0 || this.getLeaderboard()[0].score === this.getLeaderboard()[-1].score) {
+        if (this.getLeaderboard()[0].score === 0 || this.getLeaderboard()[0].score === this.getLeaderboard()[this.getLeaderboard().length - 1].score) {
             await this.sendDelayedMessage(io, {
                 playerName: 'System',
                 msg: 'Tout le monde a le même score, quelle surprise !'
