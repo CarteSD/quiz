@@ -33,7 +33,7 @@ Afin d'initialiser une partie, le serveur attend la réception d'une pré-requê
 
 Nous utilisons des tokens afin d'éviter tout vol d'identité durant une partie. Dans le cas où nous n'utiliserions pas ces tokens, il serait possible pour un joueur de se connecter à une partie sans y être invité en connaissant simplement l'UUID d'un autre joueur.
 
-Afin de se connecter au serveur de jeu, la requête doit être de la forme `/game/:gameCode/:token`. C'est ici que le serveur de jeu vérifie que la partie existe bien, et que le joueur est également répertorié dans celle-ci.
+Afin de se connecter au serveur de jeu, la requête doit être de la forme `/:gameCode/:token`. C'est ici que le serveur de jeu vérifie que la partie existe bien, et que le joueur est également répertorié dans celle-ci.
 
 Une fois que le joueur est connecté, il peut envoyer des réponses aux questions posées par le serveur. Si la réponse est correcte, le joueur gagne un point, sinon il ne gagne rien.
 
@@ -67,7 +67,7 @@ npm run watch # Pour développer
 npm run start
 ```
 
-5. Lancer une requête d'initialisation de partie *(Cf section 3 - Informations techniques)* en POST sur l'adresse `http://localhost:3001/game/123/init` avec par exemple le corps de la requête suivant :
+5. Lancer une requête d'initialisation de partie *(Cf section 3 - Informations techniques)* en POST sur l'adresse `http://localhost:3001/123/init` avec par exemple le corps de la requête suivant :
 ```json
 {
     "settings": {
@@ -84,5 +84,5 @@ npm run start
 Le serveur de jeu est maintenant accessible à l'adresse `http://localhost:3001` *(ou bien au port indiqué dans le fichier `config.json`)*.
 
 Pour le rejoindre, il suffit de se connecter à l'adresse :  
-- `http://localhost:3001/game/123/token-abc-def` pour le joueur Jean
-- `http://localhost:3001/game/123/token-ghi-jkl` pour le joueur Paul.
+- `http://localhost:3001/123/token-abc-def` pour le joueur Jean
+- `http://localhost:3001/123/token-ghi-jkl` pour le joueur Paul.
