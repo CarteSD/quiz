@@ -61,13 +61,13 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         });
         return;
     }
-    // if (players.length < MIN_PLAYERS) {
-    //     res.status(409).json({
-    //         success: false,
-    //         message: 'Pas assez de joueurs pour la partie'
-    //     });
-    //     return;
-    // }
+    if (players.length < MIN_PLAYERS) {
+        res.status(409).json({
+            success: false,
+            message: 'Pas assez de joueurs pour la partie'
+        });
+        return;
+    }
     try {
         games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.roundDuration, players));
         res.status(200).json({
