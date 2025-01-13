@@ -181,5 +181,5 @@ socket.on('end game', () => {
 });
 
 socket.on('redirect', data => {
-    window.parent.postMessage('redirect', data.url);
+    window.parent.postMessage('redirectHome', data.url);
 })
