@@ -318,22 +318,21 @@ export class Quiz {
         }
 
         // Envoie les résultats de la partie au serveur de Comus Party
+        let scores = Object.fromEntries([...this._scores].map(([_, playerData]) => [playerData.uuid, playerData.score]));
         try {
-            const response = await fetch(`${config.URL_COMUS}/game/end`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    gameCode: this._id,
-                    SCORE: Object.fromEntries([...this._scores].map(([_, playerData]) => [playerData.uuid, playerData.score])),
-                    WINNER: winner
-                })
-            });
+            let request = new FormData();
+            request.append('scores', JSON.stringify(scores));
+            request.append('winner', JSON.stringify(winner));
 
-            if (!response.ok) {
-                throw new Error('Erreur lors de l\'envoi des résultats');
+            const response = await fetch(`${config.URL_COMUS}/game/${this._id}/end`, {
+                method: 'POST',
+                body: request
+            }).then(response => response.json());
+
+            if (!response.success) {
+                throw new Error(response.message);
             }
+
             console.log(`Résultat de la partie ${this._id} envoyé au serveur de Comus Party avec succès`);
             return true;
         } catch (error) {
