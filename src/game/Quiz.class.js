@@ -32,13 +32,9 @@ export class Quiz {
         this._isRoundActive = false;            // Indique si une manche est en cours
         this._nbRounds = nbRounds;               // Nombre de manches
         this._usedPersonalities = new Set();    // Personnalités déjà utilisées au cours de la partie
-        this._allPersonalities = new Set();     // Ensemble de toutes les personnalités disponibles
         this._scores = new Map();               // Scores et autres informations à propos des participants
         this._roundDuration = duration;         // Durée d'une manche
         this._timeLeft = duration;              // Temps restant dans la manche actuelle
-
-        // Initialisation des personnalités
-        personnalites.forEach(personality => this.addPersonality(personality));
 
         // Initialisation des joueurs
         players.forEach(player => this.addPlayer(player));
@@ -90,15 +86,6 @@ export class Quiz {
 
     set roundDuration(value) {
         this._roundDuration = value
-    }
-
-    /**
-     * @brief Ajoute une personnalité au tableau de l'ensemble des personnalités
-     * @param personality Personnalité à ajouter
-     */
-    addPersonality(personality) {
-        // Ajout de la personnalité à l'ensemble des personnalités
-        this._allPersonalities.add(personality);
     }
 
     /**
@@ -157,15 +144,15 @@ export class Quiz {
      * @returns {any} Personnalité aléatoire
      */
     getRandomPersonality() {
-        // Génère un tableau des personnalités disponibles en comparant le contenu de _allPersonalities et _usedPersonalities
-        const availablePersonalities = Array.from(this._allPersonalities).filter(p => !this._usedPersonalities.has(p));
+        // Génère un tableau des personnalités disponibles en comparant le contenu de personnalites et _usedPersonalities
+        const availablePersonalities = Array.from(personnalites).filter(p => !this._usedPersonalities.has(p));
 
         // Si aucune personnalité n'est disponible, on réinitialise _usedPersonalities et on en choisit une aléatoirement
         if (availablePersonalities.length === 0) {
             this._usedPersonalities.clear();
 
             // Sélectionne une personnalité aléatoire parmi toutes les personnalités puis l'ajoute à _usedPersonalities
-            const personality = Array.from(this._allPersonalities)[Math.floor(Math.random() * this._allPersonalities.size)];
+            const personality = Array.from(personnalites)[Math.floor(Math.random() * personnalites.size)];
             this._usedPersonalities.add(personality);
 
             // Conversion de l'image en base64
