@@ -8,9 +8,14 @@
   "settings": {
     "minPlayers": 2,
     "maxPlayers": 10,
+    "allowChat": true,
+    "allowVoice": false,
+    "allowSpectators": false,
+    "allowJoinInProgress": false,
+    "allowLeaveInProgress": false,
     "isNode": true,
-    "nodeServer": "https://localhost:3001",
-    "chatEnabled": true
+    "serverPort": "http://localhost",
+    "serverAddress": "3001"
   },
   "modifiableSettings": {
     "nbRounds": {
@@ -31,10 +36,12 @@
     }
   },
   "neededParametersFromComus": [
-    "MODIFIED_SETTING_DATA"
+    "MODIFIED_SETTING_DATA",
+    "PLAYER_UUID",
+    "PLAYER_NAME"
   ],
   "returnParametersToComus": [
-    "SCORE",
-    "WINNER"
+    "WINNER_SCORE",
+    "WINNER_UUID"
   ]
 }
