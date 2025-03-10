@@ -1,6 +1,4 @@
 // Récupérer le gameId depuis l'URL
-import path from "path";
-
 const gameId = window.location.pathname.split('/').at(-2);
 const token = window.location.pathname.split('/').at(-1);
 
