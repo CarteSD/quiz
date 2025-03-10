@@ -1,7 +1,8 @@
 import express from 'express';
 import fs from 'fs';
 import { Server } from 'socket.io';
-import { createServer } from 'https';
+import { createServer as createHttpServer } from 'http';
+import { createServer as createHttpsServer } from 'https';
 import { Quiz } from "./game/Quiz.class.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -11,7 +12,7 @@ import config from '../config.json' with { type: 'json' };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-var options = null;
+let options = null;
 if (config.SSL) {
     options = {
         key: fs.readFileSync('./privkey.pem', 'utf8'),
@@ -21,7 +22,14 @@ if (config.SSL) {
 }
 
 const app = express();
-const server = createServer(options, app);
+
+let server;
+if (config.SSL) {
+    server = createHttpsServer(options, app);
+} else {
+    server = createHttpServer(app);
+}
+
 const io = new Server(server);
 
 // Stockage des différentes instances de quiz
@@ -64,6 +72,7 @@ app.get('/:gameId/:token', express.json(), (req, res) => {
 app.post('/:gameId/init', express.json(), (req, res) => {
     const gameId = req.params.gameId;
     const { settings, players } = req.body;
+    console.log(settings, players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
             success: false,
@@ -92,6 +101,7 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         });
     }
 
+    console.log(games);
 });
 
 // Route d'erreur 404 (page introuvable)
