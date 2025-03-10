@@ -1,12 +1,14 @@
 // Récupérer le gameId depuis l'URL
-const gameId = window.location.pathname.split('/')[-2];
-const token = window.location.pathname.split('/')[-1];
+const gameId = window.location.pathname.split('/').at(-2);
+const token = window.location.pathname.split('/').at(-1);
 
 // Connexion au serveur Socket.IO en envoyant le gameId
-const socket = io({
-    query: {
-        gameId: gameId,
-        token: token
+const socket = io(
+    window.location.origin + '/' + window.location.pathname.split('/')[1],
+    {
+        query: {
+            gameId: gameId,
+            token: token
     }
 });
 
