@@ -9,7 +9,7 @@ const socket = io(
             gameId: gameId,
             token: token
         },
-        path: window.location.pathname.split('/').at(1) + '/socket.io'
+        path: `/${window.location.pathname.split('/').at(1)}/socket.io`
     }
 );
 
