@@ -24,17 +24,19 @@ export class Quiz {
      * @param nbRounds Nombre de manches
      * @param duration Durée d'une manche
      * @param players Liste des joueurs
+     * @param token Token de la partie
      */
-    constructor(id, nbRounds = 5, duration = 30, players = []) {
+    constructor(id, nbRounds = 5, duration = 30, players = [], token) {
         this._id = id;                          // Identifiant de la partie
         this._currentRound = 0;                 // Numéro de la manche actuelle
         this._currentPersonality = null;        // Personnalité de la manche actuelle
         this._isRoundActive = false;            // Indique si une manche est en cours
-        this._nbRounds = nbRounds;               // Nombre de manches
+        this._nbRounds = nbRounds;              // Nombre de manches
         this._usedPersonalities = new Set();    // Personnalités déjà utilisées au cours de la partie
         this._scores = new Map();               // Scores et autres informations à propos des participants
         this._roundDuration = duration;         // Durée d'une manche
         this._timeLeft = duration;              // Temps restant dans la manche actuelle
+        this._token = token;                    // Token de la partie
 
         // Initialisation des joueurs
         players.forEach(player => this.addPlayer(player));
@@ -305,11 +307,18 @@ export class Quiz {
         }
 
         // Envoie les résultats de la partie au serveur de Comus Party
-        let scores = Object.fromEntries([...this._scores].map(([_, playerData]) => [playerData.uuid, playerData.score]));
+        let results = Object.fromEntries([...this._scores].map(([_, playerData]) => [
+            playerData.uuid,
+            {
+                token: playerData.token,
+                score: playerData.score,
+                winner: winner !== null && winner.includes(playerData.uuid)
+            }
+        ]));
         try {
             let request = new FormData();
-            request.append('scores', JSON.stringify(scores));
-            request.append('winner', JSON.stringify(winner));
+            request.append('token', JSON.stringify(this._token));
+            request.append('results', JSON.stringify(results));
 
             const response = await fetch(`${config.URL_COMUS}/game/${this._id}/end`, {
                 method: 'POST',

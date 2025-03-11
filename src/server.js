@@ -71,7 +71,7 @@ app.get('/:gameId/:token', express.json(), (req, res) => {
 // Route pour initialiser une partie
 app.post('/:gameId/init', express.json(), (req, res) => {
     const gameId = req.params.gameId;
-    const { settings, players } = req.body;
+    const { token, settings, players } = req.body;
     console.log(settings, players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
@@ -88,7 +88,7 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         return;
     }
     try {
-        games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.roundDuration, players));
+        games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.roundDuration, players, token));
         res.status(200).json({
             success: true,
             message: 'Partie initialisée avec succès'
