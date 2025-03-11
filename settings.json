@@ -41,7 +41,7 @@
     "PLAYER_NAME"
   ],
   "returnParametersToComus": [
-    "WINNER_SCORE",
-    "WINNER_UUID"
+    "WINNERS",
+    "SCORES"
   ]
 }
