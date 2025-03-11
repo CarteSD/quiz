@@ -1,0 +1,48 @@
+{
+  "game": {
+    "name": "Quiz de culture générale",
+    "version": "1.0.0",
+    "description": "Testez vos connaissances avec notre quiz de culture générale !\nDécouvrez un jeu divertissant et stimulant qui mettra à l'épreuve vos connaissances sur des thèmes variés : histoire, sciences, géographie, culture pop, et bien plus encore. Défiez vos amis ou progressez en solo pour devenir un véritable expert !\nChaque question est soigneusement sélectionnée pour vous surprendre et vous apprendre quelque chose de nouveau. Alors, prêts à relever le défi ? \nRejoignez la partie maintenant et montrez ce que vous savez !",
+    "type": "single"
+  },
+  "settings": {
+    "minPlayers": 2,
+    "maxPlayers": 10,
+    "allowChat": true,
+    "allowVoice": false,
+    "allowSpectators": false,
+    "allowJoinInProgress": false,
+    "allowLeaveInProgress": false,
+    "isNode": true,
+    "serverPort": "http://localhost",
+    "serverAddress": "3001",
+    "serveByComus": true
+  },
+  "modifiableSettings": {
+    "nbRounds": {
+      "name": "Nombre de manches",
+      "description": "Nombre de manches à effectuer pour la partie",
+      "type": "number",
+      "default": 5,
+      "min": 1,
+      "max": 10
+    },
+    "roundDuration": {
+      "name": "Durée d'une manche (en secondes)",
+      "description": "Passage à la manche suivante après cette durée si personne n'a trouvé la bonne réponse",
+      "type": "number",
+      "default": 30,
+      "min": 10,
+      "max": 120
+    }
+  },
+  "neededParametersFromComus": [
+    "MODIFIED_SETTING_DATA",
+    "PLAYER_UUID",
+    "PLAYER_NAME"
+  ],
+  "returnParametersToComus": [
+    "WINNERS",
+    "SCORES"
+  ]
+}
