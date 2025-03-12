@@ -72,7 +72,6 @@ app.get('/:gameId/:token', express.json(), (req, res) => {
 app.post('/:gameId/init', express.json(), (req, res) => {
     const gameId = req.params.gameId;
     const { token, settings, players } = req.body;
-    console.log(settings, players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
             success: false,
