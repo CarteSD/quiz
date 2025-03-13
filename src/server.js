@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import config from '../config.json' with { type: 'json' };
+import gameSettings from '../settings.json' with { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -72,7 +73,6 @@ app.get('/:gameId/:token', express.json(), (req, res) => {
 app.post('/:gameId/init', express.json(), (req, res) => {
     const gameId = req.params.gameId;
     const { token, settings, players } = req.body;
-    console.log(settings, players);
     if (players.length > MAX_PLAYERS) {
         res.status(409).json({
             success: false,
@@ -87,6 +87,17 @@ app.post('/:gameId/init', express.json(), (req, res) => {
         });
         return;
     }
+    gameSettings.modifiableSettings.forEach(setting => {
+        if (setting.type === "number") {
+            if (settings[setting.name] < setting.min || settings[setting.name] > setting.max) {
+                res.status(409).json({
+                    success: false,
+                    message: `La valeur de ${setting.name} doit être comprise entre ${setting.min} et ${setting.max}`
+                });
+                return;
+            }
+        }
+    });
     try {
         games.set(gameId, new Quiz(gameId, settings.nbRounds, settings.roundDuration, players, token));
         res.status(200).json({
