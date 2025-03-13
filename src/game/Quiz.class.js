@@ -153,8 +153,11 @@ export class Quiz {
         if (availablePersonalities.length === 0) {
             this._usedPersonalities.clear();
 
-            // Sélectionne une personnalité aléatoire parmi toutes les personnalités puis l'ajoute à _usedPersonalities
-            const personality = Array.from(personnalites)[Math.floor(Math.random() * personnalites.size)];
+            // Sélectionne une personnalité aléatoire puis crée une copie profonde
+            const originalPersonality = Array.from(personnalites)[Math.floor(Math.random() * personnalites.size)];
+            const personality = JSON.parse(JSON.stringify(originalPersonality));
+
+            // On ajoute la copie à _usedPersonalities
             this._usedPersonalities.add(personality);
 
             // Conversion de l'image en base64
@@ -163,8 +166,11 @@ export class Quiz {
             return personality;
         }
 
-        // Sinon, on choisit une personnalité aléatoire parmi les personnalités disponibles puis on l'ajoute à _usedPersonalities
-        const personality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
+        // Sinon, on choisit une personnalité aléatoire puis crée une copie profonde
+        const originalPersonality = availablePersonalities[Math.floor(Math.random() * availablePersonalities.length)];
+        const personality = JSON.parse(JSON.stringify(originalPersonality));
+
+        // On ajoute la copie à _usedPersonalities
         this._usedPersonalities.add(personality);
 
         // Conversion de l'image en base64
